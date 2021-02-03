@@ -120,6 +120,7 @@ export default {
               {
                 method:'post',
                 url:this.$global.baseUrl+'/admin/logout',
+                params:{}
               }
             ).then((response)=>{
               console.log(response);
@@ -130,8 +131,7 @@ export default {
             }).catch((error)=>console.log(error))
           },1000)
 
-        })
-        .catch(() => {})
+        }).catch((error)=>console.log(error))
     },
     // 查看消息
     checkInfo: function(){

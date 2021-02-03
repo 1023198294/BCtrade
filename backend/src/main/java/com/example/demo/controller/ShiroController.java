@@ -10,6 +10,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("admin/")
+@CrossOrigin
 public class ShiroController {
     @RequestMapping("login")
     public String login(String username, String password){
@@ -44,12 +46,12 @@ public class ShiroController {
         return "注册成功\n"+user.toString();
     }
 
-
+    @CrossOrigin
     @RequestMapping("logout")
-    public String logout() throws IOException{
-        Subject subject = SecurityUtils.getSubject();
-        System.out.println("logout");
-        subject.logout();
+    public String logout() {
+        //Subject subject = SecurityUtils.getSubject();
+        //System.out.println("logout");
+        //subject.logout();
         return "退出登录";
     }
     @RequestMapping("401")

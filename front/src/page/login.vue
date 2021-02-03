@@ -102,6 +102,7 @@ export default {
               console.log(response);
               if(response.data.toString()!=="登陆成功"){
                 this.$message(response.data.toString())
+                this.logining = false
                 //this.sucess = false;
               }else {
                 this.$message("成功登陆!")

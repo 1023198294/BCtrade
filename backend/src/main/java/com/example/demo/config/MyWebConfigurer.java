@@ -9,10 +9,12 @@ public class MyWebConfigurer implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowCredentials(true)
-                .allowedOrigins("http://localhost:8089")
-                .allowedMethods("POST","GET","PUT","OPTIONS","DELETE")
                 .allowedHeaders("*")
-                .maxAge(3600);
+                .allowedMethods("*");
     }
 }
+
+
+/**
+ * 解决跨域问题
+ */
