@@ -11,7 +11,6 @@
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-
     <name>demo</name>
     <description>Demo project for Spring Boot</description>
     <properties>
@@ -59,18 +58,10 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>/src/main/resources</directory>
                 <includes>
                     <include>**/*.xml</include>
                     <include>**/*.yml</include>
-                </includes>
-                <filtering>true</filtering>
-            </resource>
-
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.xml</include>
                 </includes>
             </resource>
         </resources>
