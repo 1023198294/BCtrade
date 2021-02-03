@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- mapper标签要指定namespace属性，不然会报错，可看做包名-->
+<mapper namespace="com.example.demo.dao.UserMapper">
+    <!--select id="findUserById" parameterType="int" resultType="com.jimmy.domain.User">
+        select * from user4 where id = #{id}
+    </select>
+    <select id="findUserAll" resultType="com.jimmy.domain.User">
+        select * from user4
+    </select>
+    <insert id="insertUser" parameterType="com.jimmy.domain.User">
+        insert into user4(username,password,age) values(#{username},#{password},#{age})
+    </insert>
+    <delete id="deleteUserById" parameterType="int">
+        delete from user4 where id=#{id}
+    </delete>
+    <update id="updateUserPassword" parameterType="com.jimmy.domain.User">
+        update user4 set password=#{password} where id=#{id}
+    </update-->
+    <select id="findUserByName" parameterType="String" resultType="com.example.demo.model.User">
+        select * from usertable where username = #{username}
+    </select>
+    <select id="findUserById" parameterType="int" resultType="com.example.demo.model.User">
+        select * from usertable where id = #{id}
+    </select>
+    <select id="findUserAll" resultType="com.example.demo.model.User">
+        select * from usertable
+    </select>
+    <insert id="insertUser" parameterType="com.example.demo.model.User">
+        insert into usertable(id,username,password,available,role,regtime) values (#{id},#{username},#{password},#{available},#{role},#{regtime})
+    </insert>
+    <delete id="deleteUserById" parameterType="String">
+        delete from usertable where id=#{id}
+    </delete>
+    <update id="updateUserPassword" parameterType="com.example.demo.model.User">
+        update usertable set password=#{password} where id=#{id}
+    </update>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="deleteTable" class="com.example.demo.model.MyDatabase">
+        <!--property name="JDBC_DRIVER" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="DB_URL" value="jdbc:mysql://47.100.138.100:3306/final?autoReconnect=true&amp;useSSL=false&amp;characterEncoding=utf-8"/>
+        <property name="USER" value="root"/>
+        <property name="PASS" value="Jj971124"/-->
+        <property name="_sql" value="DROP TABLE `usertable`"/>
+        <property name="SQLType" value="EXECUTE_TYPE"/>
+    </bean>
+
+    <bean id="createTable" class="com.example.demo.model.MyDatabase">
+        <!--property name="JDBC_DRIVER" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="DB_URL" value="jdbc:mysql://47.100.138.100:3306/final?autoReconnect=true&amp;useSSL=false&amp;characterEncoding=utf-8"/>
+        <property name="USER" value="root"/>
+        <property name="PASS" value="Jj971124"/-->
+        <property name="_sql" value="CREATE TABLE `usertable` (
+          `id` char(8) COMMENT '用户ID',
+          `username` char(40) NOT NULL DEFAULT '' COMMENT '用户名',
+          `password` varchar(255) NOT NULL DEFAULT '' COMMENT '密码',
+          `Available` boolean NOT NULL DEFAULT true COMMENT '是否被封禁',
+          `role` varchar(255) NOT NULL DEFAULT 'user' COMMENT '用户角色',
+          `regtime` varchar(255) NOT NULL COMMENT '注册时间',
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;"/>
+        <property name="SQLType" value="EXECUTE_TYPE"/>
+    </bean>
+</beans>
