@@ -70,7 +70,7 @@ public class LoginAuthorizingRealm extends AuthorizingRealm {
 
         return simpleAuthenticationInfo;
         */
-        String resource = "sqlMapConfig.xml";
+        String resource = "SqlMapConfig.xml";
         InputStream inputStream = null;
         try {
             inputStream = Resources.getResourceAsStream(resource);
