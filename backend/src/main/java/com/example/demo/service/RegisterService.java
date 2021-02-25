@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dao.UserMapper;
 import com.example.demo.model.User;
+import com.example.demo.service.blockchain.MyBlockChainService;
 import com.example.demo.utils.DataUtils;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -13,7 +14,7 @@ import java.io.InputStream;
 import java.util.Date;
 
 public class RegisterService {
-    public void register(User user) throws IOException {
+    public void register(User user) throws Exception {
         String id = DataUtils.generateShortUuid();
         Date date = new Date();
         String regTime = date.toString();
@@ -32,7 +33,13 @@ public class RegisterService {
         //userMapper.deleteUserById("3");
         session.commit();
         session.close();
+        ///*
+        MyBlockChainService myBlockChainService = new MyBlockChainService();
+        myBlockChainService.registerUser(id);
+        myBlockChainService.createWallet(id,0.0);
+        //*/
     }
+
     public User findUserByName(String username) throws IOException{
         String resource = "sqlMapConfig.xml";
         InputStream inputStream = Resources.getResourceAsStream(resource);

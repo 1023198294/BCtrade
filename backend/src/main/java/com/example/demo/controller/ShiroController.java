@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.User;
 import com.example.demo.service.RegisterService;
+import com.example.demo.service.UserManageService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -37,7 +38,7 @@ public class ShiroController {
     }
 
     @RequestMapping("register")
-    public String register(@RequestBody User user) throws IOException {
+    public String register(@RequestBody User user) throws Exception {
         RegisterService registerService = new RegisterService();
         if(registerService.findExistUsernameOrNot(user.getUsername())){
             return "用户名已存在";
@@ -83,6 +84,8 @@ public class ShiroController {
         else
             return "need admin role";
     }
+
+
 
     @RequiresPermissions("admin:shiro:list")
     @RequestMapping("list")
