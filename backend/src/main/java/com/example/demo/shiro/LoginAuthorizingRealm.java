@@ -6,11 +6,13 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.crypto.hash.Hash;
 import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.example.demo.model.User;
+
 
 public class LoginAuthorizingRealm extends AuthorizingRealm {
 
@@ -83,14 +86,16 @@ public class LoginAuthorizingRealm extends AuthorizingRealm {
         if(username.isEmpty()){
             throw new AccountException("用户名不能为空");
         }
+        //mybatis get user
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
         SqlSession session = factory.openSession();
         UserMapper userMapper = session.getMapper(UserMapper.class);
         User user = userMapper.findUserByName(usernamePasswordToken.getUsername());
+        Session curSession = SecurityUtils.getSubject().getSession();
         if(user == null){
                 throw new UnknownAccountException("用户不存在");
         }
-
+        curSession.setAttribute("userId",user.getId());
         return new SimpleAuthenticationInfo(username,user.getPassword(),user.getRole());
     }
 }

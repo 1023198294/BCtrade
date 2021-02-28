@@ -10,6 +10,7 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,9 +69,16 @@ public class ShiroController {
     @RequestMapping("hello")
     public String sayHello(){
         Subject subject = SecurityUtils.getSubject();
+        Session session = subject.getSession(false);
         //System.out.println(subject.hasRole("user"));
         if(subject.hasRole("user"))
-            return "hello";
+        {
+            if(session!=null)
+                return "hello with session userid "+session.getAttribute("userId");
+            else
+                return "hello with no session";
+        }
+
         else
             return "need user role";
     }
@@ -78,8 +86,11 @@ public class ShiroController {
     @RequestMapping("ahello")
     public String sayAdminHello(){
         Subject subject = SecurityUtils.getSubject();
+
         //System.out.println(subject.hasRole("admin"));
+        //User user = (User) subject.getPrincipal();
         if(subject.hasRole("admin"))
+
             return "hello";
         else
             return "need admin role";

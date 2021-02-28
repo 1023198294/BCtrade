@@ -26,7 +26,7 @@
           <el-checkbox v-model="ruleForm3.isadmin">是否管理</el-checkbox>
         </el-form-item>
         <el-form-item style="width: 100%">
-          <el-button type="primary" style="width: 100%" @click="checkAndSubmit">
+          <el-button :loading="registering" type="primary" style="width: 100%" @click="checkAndSubmit">
             提交
           </el-button>
         </el-form-item>
@@ -42,7 +42,6 @@
   export default {
     props:{},
     data(){
-      var sucess = false;
       var validatePass =(rule,value,callback)=>{
         if(value===''){
           callback(new Error("请再次输入密码"));
@@ -53,6 +52,7 @@
         }
       };
       return{
+        registering : false,
         ruleForm3: {
           inusername:'',
           inpassword:'',
@@ -87,6 +87,7 @@
       checkAndSubmit(){
         this.$refs.ruleForm3.validate(valid=>{
           if(valid){
+            this.registering = true
             //console.log('valid submit')
             const params = {
               id:0,
@@ -107,14 +108,16 @@
                 console.log(response);
                 if(response.data.toString()[0]==="用"){
                   this.$message("用户名已存在，请重新输入")
+                  this.registering = false
                   //this.sucess = false;
                 }else if(response.data.toString()[0]==="注"){
+                  this.registering = false
                   this.$message("成功注册!")
                   //this.sucess = true;
                   this.$router.push({path:'/login'})
                 }
               }).catch((error)=>console.log(error))
-            },1000)
+            },20000)
           }else{
             console.log('error submit')
             return false

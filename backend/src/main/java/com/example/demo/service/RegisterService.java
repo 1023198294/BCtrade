@@ -22,7 +22,7 @@ public class RegisterService {
         user.setId(id);
         user.setRegtime(regTime);
         System.out.println(user.getUsername());
-        String resource = "sqlMapConfig.xml";
+        String resource = "SqlMapConfig.xml";
         InputStream inputStream = Resources.getResourceAsStream(resource);
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
         SqlSession session = factory.openSession();
@@ -41,7 +41,7 @@ public class RegisterService {
     }
 
     public User findUserByName(String username) throws IOException{
-        String resource = "sqlMapConfig.xml";
+        String resource = "SqlMapConfig.xml";
         InputStream inputStream = Resources.getResourceAsStream(resource);
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
         SqlSession session = factory.openSession();
@@ -49,7 +49,7 @@ public class RegisterService {
         return userMapper.findUserByName(username);
     }
     public boolean findExistUsernameOrNot(String username) throws IOException{
-        String resource = "sqlMapConfig.xml";
+        String resource = "SqlMapConfig.xml";
         InputStream inputStream = Resources.getResourceAsStream(resource);
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
         SqlSession session = factory.openSession();
