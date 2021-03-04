@@ -25,14 +25,14 @@
         <el-form>
           <el-form-item
             label="充值金额"
-            rules="[{ required: true, message: '请填写Token额，仅限正数浮点数'},{pattern:/^\\d+(\\.\\d+)?$/, message: '金额正数浮点数'}]"
-            prop="money">
+            >
             <el-input
                       v-model="input"
                       placeholder="金额大小"
                       style="width: 50%"
-                      @change="check"
-                    auto-complete="false">
+                      oninput ="value=value.replace(/[^0-9.]/g,'')"
+                      auto-complete="false"
+                      >
             </el-input>
           </el-form-item>
 
@@ -75,8 +75,43 @@ export default {
     },
     nodeClick(...val) {
       console.log(222, val)
+    },
+    checkAndSubmit(){
+        if(this.input!==''){
+            this.submitting = true
+            //console.log('valid submit')
+
+            setTimeout(()=>{
+              this.$axios(
+                {
+                  method:'post',
+                  url:this.$global.baseUrl+'/admin/charge',
+                  params:{
+                    value:this.input
+                  }
+                }
+              ).then((response)=>{
+                console.log(response);
+                if(response.data.toString().split(' ')[0]==="userId"){
+                  this.$message("系统错误")
+                  this.submitting = false
+                  //this.sucess = false;
+                }else{
+                  this.submitting = false
+                  this.$message("充值成功!")
+                  //this.sucess = true;
+                  //this.$router.push({path:'/login'})
+                }
+              }).catch((error)=>console.log(error))
+            },1000)
+          }else{
+            console.log('error submit')
+            return false
+          }
+        }
+
     }
-  }
+
 }
 </script>
 

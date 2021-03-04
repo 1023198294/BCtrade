@@ -87,3 +87,18 @@ export function setCookies(memberNo, openid, token) {
   Cookies.set('token', token)
 }
 
+module.exports = {
+  dev:{
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '/',
+    proxyTable: {
+      '/admin':{
+        target: this.$global.baseUrl,
+        changeOrigin: true,
+        pathRewrite:{
+          '^/admin':'/'
+        }
+      }
+    }
+  }
+}

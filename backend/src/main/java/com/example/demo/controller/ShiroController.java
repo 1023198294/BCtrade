@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.User;
 import com.example.demo.service.RegisterService;
 import com.example.demo.service.UserManageService;
+import com.example.demo.service.blockchain.MyBlockChainService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -12,17 +13,48 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+
 
 @RestController
 @RequestMapping("admin/")
 @CrossOrigin
 public class ShiroController {
+    @RequestMapping("charge")
+    public String charge(String value){
+        MyBlockChainService myBlockChainService = new MyBlockChainService();
+        Subject subject = SecurityUtils.getSubject();
+        Session session = subject.getSession(false);
+        Object obj = session.getAttribute("userId");
+        assert obj==null;
+        //System.out.println(obj+":"+value);
+        try{
+            myBlockChainService.chargeOrDraw(obj.toString(),Double.parseDouble(value));
+        }catch(Exception e){
+            e.printStackTrace();
+            return "充值失败";
+        }
+        return "success";
+    }
+
+    @RequestMapping("draw")
+    public String draw(String value){
+        MyBlockChainService myBlockChainService = new MyBlockChainService();
+        Subject subject = SecurityUtils.getSubject();
+        Session session = subject.getSession(false);
+        Object obj = session.getAttribute("userId");
+        assert obj==null;
+        //System.out.println(obj+":"+value);
+        try{
+            myBlockChainService.chargeOrDraw(obj.toString(),-1*Double.parseDouble(value));
+        }catch(Exception e){
+            e.printStackTrace();
+            return "充值失败";
+        }
+        return "success";
+    }
     @RequestMapping("login")
     public String login(String username, String password){
         Subject subject = SecurityUtils.getSubject();
@@ -95,7 +127,6 @@ public class ShiroController {
         else
             return "need admin role";
     }
-
 
 
     @RequiresPermissions("admin:shiro:list")

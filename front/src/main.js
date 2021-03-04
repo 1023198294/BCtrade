@@ -1,3 +1,4 @@
+
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
@@ -22,7 +23,7 @@ Vue.use(Router);
 Vue.use(VCharts);
 Vue.use(Directives);
 
-
+axios.defaults.withCredentials = true;
 Vue.config.productionTip = false
  /**
   * 判断当前是否登录，未登录不能跳转路由

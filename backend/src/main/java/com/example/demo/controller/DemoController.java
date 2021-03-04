@@ -17,6 +17,7 @@ public class DemoController {
     public User getUserTemplate(){
         User user = new User("114514","野兽先辈","1919810",false,"admin","1919-8-10");
         return user;
+
     }
 
 

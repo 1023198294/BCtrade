@@ -19,7 +19,8 @@ public class FileDealController {
         // 在file文件夹中创建名为fileName的文件
         //OutputStreamWriter op = new OutputStreamWriter(new FileOutputStream("./file/" + fileName), StandardCharsets.UTF_8);
         // 获取文件输入流
-        //InputStreamReader inputStreamReader = new InputStreamReader(file.getInputStream());
+        //InputStreamReader inputSt
+        // reamReader = new InputStreamReader(file.getInputStream());
         //char[] bytes = new char[12];
         // 如果这里的bytes不是数组，则每次只会读取一个字节，例如test会变成 t   e     s    t
         //while (inputStreamReader.read(bytes) != -1){
