@@ -20,29 +20,23 @@ public class FileDealController {
     public String upload(MultipartFile file) throws SocketException, IOException {
         String fileName = file.getOriginalFilename();
         String pathName = "./file/";
-        FileOutputStream fos = null;
         File dir = new File(pathName);
         if(!dir.exists()){
             dir.mkdirs();
         }
         File checkFile = new File(pathName+fileName);
         //FileWriter writer = null;
-        try{
+        try(FileOutputStream fos = new FileOutputStream(checkFile)){
             if(!checkFile.exists()){
                 checkFile.createNewFile();
             }
             //writer = new FileWriter(checkFile,true);
             //writer.write(file.getBytes());
-            fos = new FileOutputStream(checkFile);
             fos.write(file.getBytes());
             return "上传成功";
         }catch (Exception e){
             e.printStackTrace();
             return "上传失败";
-        }finally {
-            try{fos.close();}catch (IOException e){
-                e.printStackTrace();
-            }
         }
     }
 
