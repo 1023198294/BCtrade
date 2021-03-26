@@ -1,11 +1,3 @@
-<!--
- * @Description:
- * @Autor: GaoSong
- * @Date: 2021-01-02 12:29:38
- * @LastEditors: GaoSong👉😜👈
- * @LastEditTime: 2021-01-02 14:49:48
--->
-
 <template>
   <div class="container-box">
 
@@ -21,7 +13,10 @@
         Description of BCToken
       </el-aside>
       <el-main  >
-        <div style="margin-top: 150px;margin-bottom: 20px">请输入充值金额</div>
+        <div style="margin-top: 40px;margin-bottom: 20px;font-size: 20px">当前余额</div>
+        <div style="margin-top: 60px;margin-bottom: 20px;font-size: 20px">{{remain}}</div>
+
+        <div style="margin-top: 80px;margin-bottom: 20px;font-size: 20px">请输入充值金额</div>
         <el-form>
           <el-form-item
             label="充值金额"
@@ -43,6 +38,7 @@
         </el-button>
       </el-main>
     </el-container>
+
   </div>
 </template>
 <script>
@@ -57,10 +53,19 @@ export default {
       rules:{
         money:[
           {required:true,message:'请输入金额大小'},
-
         ]
-      }
+      },
+      remain:"当前余额获取中……"
     }
+  },
+  created() {
+    var _this = this
+    this.$axios.get(this.$global.baseUrl+"/admin/remain").then(function (res){
+      if(res.data==="余额查询错误"){
+        _this.remain = res.data;
+      }
+      _this.remain = _this.toDecimal2(res.data);
+    })
   },
   mounted() {
     const num = 666
@@ -76,41 +81,60 @@ export default {
     nodeClick(...val) {
       console.log(222, val)
     },
-    checkAndSubmit(){
-        if(this.input!==''){
-            this.submitting = true
-            //console.log('valid submit')
+    checkAndSubmit() {
+      if (this.input !== '') {
+        this.submitting = true
+        //console.log('valid submit')
 
-            setTimeout(()=>{
-              this.$axios(
-                {
-                  method:'post',
-                  url:this.$global.baseUrl+'/admin/charge',
-                  params:{
-                    value:this.input
-                  }
-                }
-              ).then((response)=>{
-                console.log(response);
-                if(response.data.toString().split(' ')[0]==="userId"){
-                  this.$message("系统错误")
-                  this.submitting = false
-                  //this.sucess = false;
-                }else{
-                  this.submitting = false
-                  this.$message("充值成功!")
-                  //this.sucess = true;
-                  //this.$router.push({path:'/login'})
-                }
-              }).catch((error)=>console.log(error))
-            },1000)
-          }else{
-            console.log('error submit')
-            return false
-          }
-        }
+        setTimeout(() => {
+          this.$axios(
+            {
+              method: 'post',
+              url: this.$global.baseUrl + '/admin/charge',
+              params: {
+                value: this.input
+              }
 
+            }
+          ).then((response) => {
+            console.log(response);
+            if (response.data.toString().split(' ')[0] === "userId") {
+              this.$message("系统错误")
+              this.submitting = false
+              //this.sucess = false;
+            } else {
+              this.submitting = false
+              this.$message("充值成功!")
+              //this.sucess = true;
+              //this.$router.push({path:'/login'})
+              this.remain = this.toDecimal2(parseFloat(this.remain)+parseFloat(this.input))
+            }
+          }).catch((error) => console.log(error))
+        }, 1000)
+      } else {
+        console.log('error submit')
+        return false
+      }
+    },
+    toDecimal2(x) {
+      var f = parseFloat(x);
+      if (isNaN(f)) {
+        return false;
+      }
+      var f = Math.round(x*100)/100;
+      var s = f.toString();
+      var rs = s.indexOf('.');
+      if (rs < 0) {
+        rs = s.length;
+        s += '.';
+      }
+      while (s.length <= rs + 2) {
+        s += '0';
+      }
+      return s;
     }
+
+}
 
 }
 </script>

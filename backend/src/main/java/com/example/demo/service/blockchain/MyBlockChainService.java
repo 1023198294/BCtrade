@@ -215,4 +215,23 @@ public class MyBlockChainService {
         }
         return new String(result);
     }
+
+    public String queryWalletById(String userId) throws Exception{
+        Path walletPath = Paths.get("wallet");
+        Wallet wallet = Wallets.newFileSystemWallet(walletPath);
+        // load a CCP
+        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
+        Gateway.Builder builder = Gateway.createBuilder();
+        builder.identity(wallet, userId).networkConfig(networkConfigPath).discovery(true);
+        byte[] result = new byte[0];
+        try(Gateway gateway = builder.connect()){
+            Network network = gateway.getNetwork("mychannel");
+            Contract contract = network.getContract("bctrade");
+            result = contract.submitTransaction("queryWallet",userId);
+            System.out.println(new String(result));
+        } catch (ContractException | InterruptedException | TimeoutException e) {
+            e.printStackTrace();
+        }
+        return new String(result);
+    }
 }

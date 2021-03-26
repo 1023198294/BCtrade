@@ -20,7 +20,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("admin/")
-@CrossOrigin
+@CrossOrigin(originPatterns = "*",allowCredentials="true",allowedHeaders = "*",methods = {})
 public class ShiroController {
     @RequestMapping("charge")
     public String charge(String value){
@@ -51,7 +51,7 @@ public class ShiroController {
             myBlockChainService.chargeOrDraw(obj.toString(),-1*Double.parseDouble(value));
         }catch(Exception e){
             e.printStackTrace();
-            return "充值失败";
+            return "提现失败";
         }
         return "success";
     }
@@ -127,6 +127,7 @@ public class ShiroController {
         else
             return "need admin role";
     }
+
 
 
     @RequiresPermissions("admin:shiro:list")

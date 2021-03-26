@@ -14,7 +14,7 @@ import Directives from './utils/directive'
 import axios from 'axios'
 import global_variable from "./global_variable";
 import qs from 'qs'
-
+axios.defaults.withCredentials = true;
 Vue.prototype.$global = global_variable;
 Vue.prototype.$axios = axios;
 Vue.prototype.qs = qs;
@@ -23,7 +23,7 @@ Vue.use(Router);
 Vue.use(VCharts);
 Vue.use(Directives);
 
-axios.defaults.withCredentials = true;
+
 Vue.config.productionTip = false
  /**
   * 判断当前是否登录，未登录不能跳转路由
