@@ -43,40 +43,21 @@ public class FileDealController {
     @RequestMapping(value = "testDownload")
     public String  download(HttpServletRequest request, HttpServletResponse response){
         String fileName = request.getParameter("fileName");
-        OutputStream os = null;
-        InputStream is = null;
         String pathName = "./file/";
         System.out.println(fileName);
         //fileName = "STAR.txt";
-        try{
-            os = response.getOutputStream();
+        File file = new File(pathName+fileName);
+
+        try(FileInputStream is = new FileInputStream(file)){
+            //os = response.getOutputStream();
             //response.reset();
             response.setContentType("application/x-download;charset=GBK");
             //response.setHeader("Content-Disposition", "attachment;filename="+ new String(fileName.getBytes("utf-8"), "iso-8859-1"));
-            File file = new File(pathName+fileName);
-            is = new FileInputStream(file);
-            if(is==null){
-                return "failed! file not exist";
-            }
             IOUtils.copy(is,response.getOutputStream());
             response.getOutputStream().flush();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            try{
-                if(is!=null){
-                    is.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try{
-                if(os!=null){
-                    os.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            return "failed! file not exist";
         }
         return  null;
         //return "failed";
