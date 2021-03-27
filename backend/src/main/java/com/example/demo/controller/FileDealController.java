@@ -1,5 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.FileDealerCode;
+import com.example.demo.service.FileSaveService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,32 +17,64 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+
 @RestController
 @RequestMapping("admin/")
 @CrossOrigin
 public class FileDealController {
     @RequestMapping(value = "upload")
-    public String upload(MultipartFile file) throws SocketException, IOException {
-        String fileName = file.getOriginalFilename();
-        String pathName = "./file/";
-        File dir = new File(pathName);
-        if(!dir.exists()){
-            dir.mkdirs();
-        }
-        File checkFile = new File(pathName+fileName);
-        //FileWriter writer = null;
-        try(FileOutputStream fos = new FileOutputStream(checkFile)){
-            if(!checkFile.exists()){
-                checkFile.createNewFile();
-            }
-            //writer = new FileWriter(checkFile,true);
-            //writer.write(file.getBytes());
-            fos.write(file.getBytes());
-            return "上传成功";
-        }catch (Exception e){
+    public String upload(MultipartFile file, String dataname, String size, String value, String description) throws SocketException, IOException {
+        Subject subject = SecurityUtils.getSubject();
+        Session session = subject.getSession(false);
+        FileSaveService fileSaveService = new FileSaveService(session);
+        try {
+            fileSaveService.init(file);
+
+        } catch (Exception e) {
             e.printStackTrace();
-            return "上传失败";
+            return "初始化失败";
         }
+        try {
+            FileDealerCode code = fileSaveService.saveToLocal();
+            if(code==FileDealerCode.DATA_ASSET_SAVE_FAILED){
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "保存本地失败";
+        }
+
+        try {
+            FileDealerCode code = fileSaveService.saveDataAsset(value);
+            if(code==FileDealerCode.DATA_ASSET_SAVE_FAILED){
+                throw  new  Exception();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "保存数据资产失败";
+        }
+
+        try {
+            FileDealerCode code = fileSaveService.saveDataInfo(dataname,size,description);
+            if(code==FileDealerCode.DATA_INFO_SAVE_FAILED){
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "保存数据信息失败";
+        }
+
+        try{
+            FileDealerCode code = fileSaveService.saveDataContent();
+            if(code==FileDealerCode.DATA_CONTENT_SAVE_FAILED){
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "保存数据内容失败";
+        }
+        return "上传成功";
     }
 
     @RequestMapping(value = "testDownload")

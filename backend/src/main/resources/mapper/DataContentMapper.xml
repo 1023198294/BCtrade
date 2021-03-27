@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.DataContentMapper">
+    <!--insert id="insertData" parameterType="com.example.demo.model.DataAsset">
+        insert into datatable(dataid,ownerid,creatorid,originaldataid, value, createdDate,scratch) values(#{dataId},#{ownerId},#{creatorId},#{originalId}, #{value}, #{createdDate},#{scratch})
+    </insert>
+    <select id="getDataIdById" parameterType="String" resultType="String">
+        select dataid from datatable where ownerid=#{ownerid}
+    </select>
+    <select id="getDataById" parameterType="String" resultType="com.example.demo.model.DataAsset">
+        select * from datatable where ownerid=#{ownerid}
+    </select-->
+    <insert id="insertDataContent" parameterType="com.example.demo.model.DataContent">
+        insert into datacontent(dataid, content) values(#{dataid},#{content})
+    </insert>
+    <select id="getDataById" parameterType="String" resultType="String">
+        select content from datacontent where dataid = #{dataid}
+    </select>
+</mapper>

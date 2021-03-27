@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.User;
+import com.example.demo.service.FileSaveService;
 import com.example.demo.service.RegisterService;
 import com.example.demo.service.UserManageService;
 import com.example.demo.service.blockchain.MyBlockChainService;
@@ -14,8 +15,10 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.SocketException;
 
 
 @RestController
@@ -146,5 +149,7 @@ public class ShiroController {
     public String unAuth() {
         return "未认证";
     }
+
+
 
 }

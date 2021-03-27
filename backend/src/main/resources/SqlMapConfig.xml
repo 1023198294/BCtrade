@@ -24,6 +24,8 @@
     <mappers>
         <mapper resource="mapper/UserMapper.xml"/>
         <mapper resource="mapper/DataMapper.xml"/>
+        <mapper resource="mapper/DataInfoMapper.xml"/>
+        <mapper resource="mapper/DataContentMapper.xml"/>
     </mappers>
 
 </configuration>

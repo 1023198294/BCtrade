@@ -21,6 +21,7 @@
       <el-upload
         class="upload-demo"
         :action=posturl
+        :data="{dataname:this.form.filename,size:this.form.size,value:this.form.value,description:this.form.description}"
         ref="upload"
         multiple
         :on-preview="handlePreview"
@@ -30,6 +31,8 @@
         :multiple="false"
         :on-exceed="removeFile"
         :on-remove="handleRemove"
+        :on-success="handleRes"
+        :with-credentials="true"
       >
         <el-button slot="trigger" size="small" type="primary">选择文件上传</el-button>
         <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
@@ -119,7 +122,7 @@ export default {
             })
             this.$notify({
               title:'notification',
-              message:'上传已完成',
+              message:'检查完毕，准备上传',
               type:'success'
             })
             this.timer = setTimeout(()=>{   //设置延迟执行
@@ -130,7 +133,7 @@ export default {
           }else{
             this.$notify({
               title:'error',
-              message:'上传失败',
+              message:'上传失败,请检查输入是否完整',
               type:'error'
             })
           }
@@ -143,6 +146,22 @@ export default {
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
+    },
+    handleRes(res){
+      console.log(res)
+      if(res==='上传成功'){
+        this.$notify({
+          title:'notification',
+          message:'上传成功',
+          type:'success'
+        })
+      }else{
+        this.$notify({
+          title:'error',
+          message:res,
+          type:'error'
+        })
+      }
     },
     removeFile(){
       this.$notify({

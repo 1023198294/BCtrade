@@ -1,0 +1,54 @@
+class MyHashSet {
+    List<Node> myHashBuckets;
+    int seed = 8;
+    int curSize = 0;
+    /** Initialize your data structure here. */
+    public MyHashSet() {
+        myHashBuckets = new LinkedList<>();
+        for(int i=0;i<seed;i++){
+            myHashBuckets.add(new Node(0,-1,null));
+        }
+    }
+    
+    public void add(int key) {
+        curSize++;
+        if(curSize>seed*3/4){
+            extend();
+        }
+        int bucketNum = key % seed;
+
+    }
+    
+    public void remove(int key) {
+
+    }
+    
+    /** Returns true if this set contains the specified element */
+    public boolean contains(int key) {
+
+    }
+    public void extend(){
+        int formerSeed = seed;
+        seed = seed<<1;
+        for(int i=0;i<myHashBuckets;i++){
+            
+        }
+    }
+}
+class Node{
+    public int key;
+    public int value;
+    public Node next;
+    public Node(int key,int value,Node next){
+        this.key = key;
+        this.value = value;
+        this.next = next;
+    }
+}
+/**
+ * Your MyHashSet object will be instantiated and called as such:
+ * MyHashSet obj = new MyHashSet();
+ * obj.add(key);
+ * obj.remove(key);
+ * boolean param_3 = obj.contains(key);
+ */
