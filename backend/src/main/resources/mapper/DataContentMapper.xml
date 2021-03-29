@@ -13,9 +13,12 @@
         select * from datatable where ownerid=#{ownerid}
     </select-->
     <insert id="insertDataContent" parameterType="com.example.demo.model.DataContent">
-        insert into datacontent(dataid, content) values(#{dataid},#{content})
+        insert into datacontent(dataid, datarealname,content) values(#{dataid},#{name},#{content})
     </insert>
-    <select id="getDataById" parameterType="String" resultType="String">
-        select content from datacontent where dataid = #{dataid}
+    <select id="getDataContentById" parameterType="String" resultType="com.example.demo.model.DataContent">
+        select * from datacontent where dataid = #{dataid}
+    </select>
+    <select id="getDataRealNameById" parameterType="String" resultType="String">
+        select datarealname from datacontent where dataid=#{dataid}
     </select>
 </mapper>

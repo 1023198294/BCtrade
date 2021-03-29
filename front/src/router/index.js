@@ -9,6 +9,7 @@ import notFound from '../page/404.vue'
 import sub11 from '../page/menu1/sub1.vue'
 import sub12 from '../page/menu1/sub2.vue'
 import sub21 from '../page/menu2/sub1.vue'
+import sub31 from '../page/menu3/sub1.vue'
 import news from '../page/info/news'
 import register from '../page/register'
 // 要告诉 vue 使用 vueRouter
@@ -82,8 +83,15 @@ let routes = [
   {
     path: '/menu3',
     component: home,
-    name: '数据广场',
-    iconCls: 'el-icon-message'
+    name: '发现数据',
+    iconCls: 'el-icon-message',
+    children: [
+      {
+        path: 'sub1',
+        component:sub31,
+        name:'数据广场'
+      }
+    ]
   }
 ];
 var router = new VueRouter({

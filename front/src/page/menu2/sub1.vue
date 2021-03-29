@@ -1,11 +1,34 @@
 <template lang="html">
   <div class="table-content">
-    <el-table :data="tableData" size="mini" border style="width: 100%">
-      <el-table-column prop="date" label="日期" width="180"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-      <el-table-column prop="address" label="地址"></el-table-column>
+    <el-table v-loading="loadingPitch" :data="pageList" size="mini" border style="width: 100%">
+
+      <el-table-column prop="id" label=" " width="50"></el-table-column>
+      <el-table-column prop="dataid" label="数据id" width="100"></el-table-column>
+      <el-table-column prop="originalId" label="源数据id" width="100"></el-table-column>
+      <el-table-column prop="creatorId" label="创建者id" width="140"></el-table-column>
+      <el-table-column prop="createdDate" label="创建日期" width="240"></el-table-column>
+      <el-table-column prop="value" label="价值"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="100">
+        <template slot-scope="scope">
+          <el-button @click="handleCheckRow(scope.row)" type="text" size="small">详细</el-button>
+          <el-button @click="handleDownloadRow(scope.row)" type="text" size="small">下载</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-button size="small" type="primary" @click="dialogFormVisible = true; clearAll()" >上传个人数据</el-button>
+    <el-dialog title="数据概览" :visible.sync="dialogCheckVisible">
+      <div>
+        <h2>数据名称</h2>
+        <p>
+          {{this.dataN}}
+        </p>
+        <h2>数据描述</h2>
+        <p>
+          {{this.dataD}}
+        </p>
+      </div>
+
+    </el-dialog>
     <el-dialog title="数据信息" :visible.sync="dialogFormVisible">
       <el-form :model="form" :rules="rules" ref="form">
         <el-form-item label="数据名称" prop="filename">
@@ -21,9 +44,10 @@
       <el-upload
         class="upload-demo"
         :action=posturl
-        :data="{dataname:this.form.filename,size:this.form.size,value:this.form.value,description:this.form.description}"
+        :data="{dataname:this.form.filename,size:this.form.size,value:this.form.value,description:this.form.description,dataRealName:this.form.dataRealName}"
         ref="upload"
         multiple
+        :on-change="updateSize"
         :on-preview="handlePreview"
         :limit="1"
         :auto-upload="false"
@@ -44,11 +68,14 @@
     <el-button size="small" type="primary" @click="handleDownload">
       点击下载
     </el-button>
-    <pagination
-      @sendPageSize="receivePageSize"
-      @sendCurrentPage="receiveCurrentPage"
-      :totalPage="totalPage"
-    ></pagination>
+    <el-pagination
+      small
+      @current-change="handleCurrentChange"
+      layout="prev, pager, next"
+      :page-size="pageSize"
+      :total="pageSize*pageCount"
+    >
+    </el-pagination>
   </div>
 
 </template>
@@ -59,40 +86,27 @@ import axios from "axios";
 export default {
   data() {
     return {
+      dtrn:'',
+      pageCount:1,
+      dataN:'加载中...',
+      dataD:'加载中...',
+      loadingPitch:false,
+      pageList:[],
+      curPage:1,
+      pageSize:5,
       form:{
         filename:'',
         description:'',
         size:0.0,
-        value:0.0
+        value:0.0,
+        dataRealName:''
       },
       posturl:this.$global.baseUrl+"/admin/upload",
       totalPage: 300,
-      filename:"面试.pdf",
+      filename:"美赛H奖.pdf",
       filelist:[],
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        }
-      ],
-
       dialogFormVisible:false,
+      dialogCheckVisible:false,
       rules:{
         filename: [
           {required: true, message: '文件名不为空', trigger: 'blur'}
@@ -104,22 +118,138 @@ export default {
 
     };
   },
+  created() {
+    this.handleUpdatePage()
+  },
   methods: {
     clearAll(){
       this.form.filelist = [];
       this.form.filename = '';
       this.form.description = '';
       this.form.value = 0;
+      this.form.dataRealName = '';
       },
+    handleDownloadRow(row){
+
+      var dtid = this.pageList[row.id].originalId
+
+      //console.log(dtid)
+      this.$axios({
+        method:'get',
+        url:this.$global.baseUrl+'/admin/getRealName',
+        params:{
+          dataid:dtid
+        }
+      }).then((res)=>{
+        this.dtrn = res.data
+      })
+
+      this.$axios({
+        method:'get',
+        url:this.$global.baseUrl+'/admin/Download',
+        params:{
+          dataId:dtid
+        },
+        responseType:'blob'
+      }).then((res)=>{
+        const blob = res.data
+        const reader = new FileReader()
+        reader.readAsDataURL(blob)
+        reader.onload = (e) => {
+          const a = document.createElement('a')
+          a.download = this.dtrn
+          a.href = e.target.result
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+        }
+      }).catch((error)=>console.log(error))
+    },
+    handleCheckRow(row){
+      var dtid = this.pageList[row.id].originalId
+      this.dataN='加载中...'
+      this.dataD='加载中...'
+      this.$axios({
+        method:'post',
+        url:this.$global.baseUrl+'/admin/queryInfo',
+        params:{
+          dataId:dtid
+        }
+      }).then((res)=>{
+        this.dataN = res.data.dataname
+        this.dataD = res.data.description
+      })
+      this.dialogCheckVisible = true
+    },
+    handleCurrentChange(currentPage){
+      this.currentPage = currentPage
+      this.pageList = []
+      this.handleUpdatePage()
+    },
+    handleUpdatePage(){
+      var _this = this
+      this.pageList = []
+      this.$axios(
+        {
+          method:'post',
+          url:_this.$global.baseUrl+'/admin/getOwnData',
+          params:{
+            page:this.curPage,
+            pageSize:this.pageSize
+          }
+        }
+      ).then((res)=>{
+        //console.log(res)
+        this.pageCount = Math.floor(Math.round(res.data.page)/Math.round(this.pageSize))+1
+        var indexes = res.data.page;
+        if(indexes===(this.pageCount-1)*this.pageSize){
+          this.pageCount-=1
+        }
+        if(indexes<this.pageSize){
+        } else if(indexes>this.pageSize && this.currentPage===this.pageCount){
+          indexes = indexes % this.pageSize
+        }else{
+          indexes = this.pageSize
+        }
+        //console.log(indexes,this.pageCount,this.pageSize)
+        for(var i=0;i<indexes;i++){
+          const idx = 'data'+i
+          let temp=
+            {
+              id:i,
+              dataid:res.data[idx].dataid,
+              creatorId:res.data[idx].creatorId,
+              createdDate:res.data[idx].createdDate,
+              originalId:res.data[idx].originalId,
+              value:res.data[idx].value,
+
+              /*
+                    <el-table-column prop="id" label=" " width="50"></el-table-column>
+      <el-table-column prop="dataid" label="数据ID" width="140"></el-table-column>
+      <el-table-column prop="creatorId" label="创建者id" width="140"></el-table-column>
+      <el-table-column prop="createdDate" label="创建日期" width="140"></el-table-column>
+      <el-table-column prop="value" label="价值"></el-table-column>
+          */
+            }
+
+          this.pageList.push(temp)
+        }}
+      )
+    },
+    updateSize(file,fileList){
+      //console.log(file)
+      this.form.size = file.size
+      this.form.dataRealName = file.name
+
+    },
     submitUpload(){
       this.$refs.form.validate(
         valid=>{
           if(valid){
+
             this.$refs.upload.submit();
             //console.log(this.filelist)
-            this.filelist.forEach( file=>{
-              console.log(file)
-            })
+
             this.$notify({
               title:'notification',
               message:'检查完毕，准备上传',
@@ -148,13 +278,14 @@ export default {
       console.log(file, fileList);
     },
     handleRes(res){
-      console.log(res)
+      //console.log(res)
       if(res==='上传成功'){
         this.$notify({
           title:'notification',
           message:'上传成功',
           type:'success'
         })
+        this.handleUpdatePage()
       }else{
         this.$notify({
           title:'error',
@@ -178,14 +309,6 @@ export default {
       console.log(val);
     },
     handleDownload(){
-      /*this.$axios.get(this.$global.baseUrl + '/admin/testDownload?fileName=STAR.txt', {responseType: 'arraybuffer'})
-      .then((res)=>{
-        let url = window.URL.createObjectURL(new Blob([res.data]))
-        let a = document.createElement('a')
-        a.setAttribute("download","STAR.txt")
-        a.href = url
-        a.click()
-      })*/
       this.$axios({
         url:this.$global.baseUrl + '/admin/testDownload',
         method:'get',

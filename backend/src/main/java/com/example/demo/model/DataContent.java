@@ -5,18 +5,25 @@ import java.util.Arrays;
 
 public class DataContent {
     String dataid;
-    String content;
-    byte[] contentByte;
-
-    public DataContent(String dataid, String content) {
+    byte[] content;
+    String name;
+    public DataContent(String dataid, String name, byte[] content) {
         this.dataid = dataid;
+        this.name = name;
         this.content = content;
-        this.contentByte = content.getBytes(StandardCharsets.UTF_8);
     }
 
-    public DataContent(String dataid, byte[] contentByte) {
-        this.dataid = dataid;
-        this.contentByte = contentByte;
-        this.content = Arrays.toString(contentByte);
+
+    public String getDataid() {
+        return dataid;
     }
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public String getName() {
+        return name;
+    }
+
 }

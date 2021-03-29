@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
+
+import com.example.demo.model.DataAsset;
 import org.hyperledger.fabric.gateway.*;
 import org.hyperledger.fabric.sdk.Enrollment;
 import org.hyperledger.fabric.sdk.User;
@@ -73,7 +75,7 @@ public class MyBlockChainService {
         return new String(result);
     }
 
-    public String addTradeInfo(String fromId,String toId,String dataId,String originalDataId,String creatorId,double rate,double value)throws Exception{
+    public String addTradeInfo(String fromId,String toId,String dataId,String originalDataId,String creatorId,double rate,String value)throws Exception{
         Path walletPath = Paths.get("wallet");
         Wallet wallet = Wallets.newFileSystemWallet(walletPath);
         // load a CCP
@@ -228,6 +230,26 @@ public class MyBlockChainService {
             Network network = gateway.getNetwork("mychannel");
             Contract contract = network.getContract("bctrade");
             result = contract.submitTransaction("queryWallet",userId);
+            System.out.println(new String(result));
+        } catch (ContractException | InterruptedException | TimeoutException e) {
+            e.printStackTrace();
+        }
+        return new String(result);
+    }
+
+    public String addData(DataAsset dataAsset) throws Exception{
+        Path walletPath = Paths.get("wallet");
+        Wallet wallet = Wallets.newFileSystemWallet(walletPath);
+        // load a CCP
+        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
+        Gateway.Builder builder = Gateway.createBuilder();
+        builder.identity(wallet, dataAsset.getOwnerId()).networkConfig(networkConfigPath).discovery(true);
+        byte[] result = new byte[0];
+        try(Gateway gateway = builder.connect()){
+            Network network = gateway.getNetwork("mychannel");
+            Contract contract = network.getContract("bctrade");
+            result = contract.submitTransaction("addData",dataAsset.getDataId(),dataAsset.getOwnerId(),dataAsset.getCreatorId(),dataAsset.getOriginalId(),dataAsset.getValue(),dataAsset.getCreatedDate(),dataAsset.getScratch());
+            //String dataId, String ownerId, String creatorId, String originalDataId, double value, String createdDate, String scratch
             System.out.println(new String(result));
         } catch (ContractException | InterruptedException | TimeoutException e) {
             e.printStackTrace();

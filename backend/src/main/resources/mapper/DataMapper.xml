@@ -12,4 +12,7 @@
     <select id="getDataById" parameterType="String" resultType="com.example.demo.model.DataAsset">
         select * from datatable where ownerid=#{ownerid}
     </select>
+    <select id="getDataByDataId" parameterType="String" resultType="com.example.demo.model.DataAsset">
+        select * from datatable where dataid=#{dataid}
+    </select>
 </mapper>

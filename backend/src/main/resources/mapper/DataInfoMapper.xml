@@ -5,9 +5,15 @@
 <mapper namespace="com.example.demo.dao.DataInfoMapper">
 
     <insert id="insertDataInfo" parameterType="com.example.demo.model.DataInfo">
-        insert into datainfotable(dataid,dataname,size,description,`key`) values(#{dataid},#{dataname},#{size},#{description},#{key})
+        insert into datainfotable(dataid,dataname,size,description,`key`,value) values(#{dataid},#{dataname},#{size},#{description},#{key},#{value})
     </insert>
+
     <select id="getDataInfoById" parameterType="String" resultType="com.example.demo.model.DataInfo">
         select * from datainfotable where dataid=#{dataid}
     </select>
+
+    <select id="getDataInfoByLikeName" parameterType="String" resultType="com.example.demo.model.DataInfo">
+        select * from datainfotable where dataname like "%"#{dname}"%"
+    </select>
+    <!--    public List<DataInfo> getDataInfoByLikeName(String datalname);-->
 </mapper>

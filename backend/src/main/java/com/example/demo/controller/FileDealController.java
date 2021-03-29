@@ -1,7 +1,21 @@
 package com.example.demo.controller;
 
+import com.example.demo.dao.DataContentMapper;
+import com.example.demo.dao.DataInfoMapper;
+import com.example.demo.dao.DataMapper;
+import com.example.demo.model.DataAsset;
+import com.example.demo.model.DataContent;
+import com.example.demo.model.DataInfo;
 import com.example.demo.model.FileDealerCode;
 import com.example.demo.service.FileSaveService;
+import com.example.demo.utils.AESUtil;
+import com.example.demo.utils.DataJSON;
+import com.github.pagehelper.ISelect;
+import com.github.pagehelper.PageHelper;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
@@ -14,17 +28,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 @RestController
 @RequestMapping("admin/")
 @CrossOrigin
 public class FileDealController {
     @RequestMapping(value = "upload")
-    public String upload(MultipartFile file, String dataname, String size, String value, String description) throws SocketException, IOException {
+    public String upload(MultipartFile file, String dataname,String dataRealName, String size, String value, String description) throws SocketException, IOException {
         Subject subject = SecurityUtils.getSubject();
         Session session = subject.getSession(false);
         FileSaveService fileSaveService = new FileSaveService(session);
@@ -56,7 +72,7 @@ public class FileDealController {
         }
 
         try {
-            FileDealerCode code = fileSaveService.saveDataInfo(dataname,size,description);
+            FileDealerCode code = fileSaveService.saveDataInfo(dataname,size,description,value);
             if(code==FileDealerCode.DATA_INFO_SAVE_FAILED){
                 throw new Exception();
             }
@@ -66,7 +82,7 @@ public class FileDealController {
         }
 
         try{
-            FileDealerCode code = fileSaveService.saveDataContent();
+            FileDealerCode code = fileSaveService.saveDataContent(dataRealName);
             if(code==FileDealerCode.DATA_CONTENT_SAVE_FAILED){
                 throw new Exception();
             }
@@ -99,5 +115,142 @@ public class FileDealController {
         return  null;
         //return "failed";
     }
+    @RequestMapping(value = "getRealName")
+    public String getRealName(String dataid) throws IOException {
+        String resource = "SqlMapConfig.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession session = factory.openSession();
+        DataContentMapper dataContentMapper = session.getMapper(DataContentMapper.class);
+        try {
+            String dataRealName = dataContentMapper.getDataRealNameById(dataid);
+            System.out.println(dataRealName);
+            return dataRealName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
+    }
+    @RequestMapping(value = "Download")
+    public String downloadById(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Subject subject = SecurityUtils.getSubject();
+        Session webSession = subject.getSession(false);
+        if(webSession==null){
+            //非法请求
+            return null;
+        }
+        String resource = "SqlMapConfig.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession session = factory.openSession();
+        String dataId = request.getParameter("dataId");
+        DataContentMapper dataContentMapper = session.getMapper(DataContentMapper.class);
+        DataContent dataContent= dataContentMapper.getDataContentById(dataId);
+        DataInfoMapper dataInfoMapper = session.getMapper(DataInfoMapper.class);
+        DataInfo dataInfo = dataInfoMapper.getDataInfoById(dataId);
+        byte[] key = dataInfo.getKey();
+        //byte[] content = dataContent.getContentByte();
+        String fileName = dataContent.getName();
+        try {
+            response.setContentType("application/x-download;charset=GBK");
+            byte[] flow = AESUtil.decrypt(dataContent.getContent(),key);
+            //IOUtils.copy(flow,response.getOutputStream());
+            OutputStream outputStream = response.getOutputStream();
+            outputStream.write(flow);
+            response.getOutputStream().flush();
+            response.getOutputStream().close();
+            response.setStatus(200);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(501);
+        }
+        return null;
+    }
+    @RequestMapping("search")
+    public String search(String dname,String page,String pageSize) throws IOException {
+        String resource = "SqlMapConfig.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession session = factory.openSession();
+        //UserMapper userMapper = session.getMapper(UserMapper.class);
+        DataInfoMapper dataInfoMapper = session.getMapper(DataInfoMapper.class);
+        try {
+            int p = 0;
+
+            if(page!="-1"){
+                p = Integer.parseInt(page);
+            }
+            PageHelper.startPage(p,Integer.parseInt(pageSize));
+            List<DataInfo> res = dataInfoMapper.getDataInfoByLikeName(dname);
+            long total = PageHelper.count(new ISelect() {
+                @Override
+                public void doSelect() {
+                    dataInfoMapper.getDataInfoByLikeName("test");
+                }
+            });
+            return DataJSON.dataInfo2js(res,p,total).toString();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return "失败";
+        }
+    }
+
+    @RequestMapping("getOwnData")
+    public String getOwnData(String page,String pageSize) throws IOException {
+        String resource = "SqlMapConfig.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession session = factory.openSession();
+        //UserMapper userMapper = session.getMapper(UserMapper.class);
+        DataMapper dataMapper = session.getMapper(DataMapper.class);
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            Session webSession = subject.getSession(false);
+            String userId = (String) webSession.getAttribute("userId");
+            int p = 0;
+
+            if(!page.equals("-1")){
+                p = Integer.parseInt(page);
+            }
+            PageHelper.startPage(p,Integer.parseInt(pageSize));
+            List<DataAsset> res = dataMapper.getDataById(userId);
+            long total = PageHelper.count(new ISelect() {
+                @Override
+                public void doSelect() {
+                    dataMapper.getDataById(userId);
+                }
+            });
+            return DataJSON.dataAsset2js(res,p,total).toString();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return "失败";
+        }
+    }
+
+    @RequestMapping("purchase")
+    public String purchase(String source) throws IOException {
+        Subject subject = SecurityUtils.getSubject();
+        Session session = subject.getSession(false);
+        FileSaveService fileSaveService = new FileSaveService(session);
+        try {
+            return fileSaveService.purchase(source);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
+    }
+
+    @RequestMapping("queryInfo")
+    public String queryDataInfo(String dataId){
+        FileSaveService fileSaveService = new FileSaveService();
+        try {
+            return fileSaveService.getDataInfoById(dataId);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "outer failed";
+        }
+    }
+
+    //    public String addTradeInfo(final Context ctx,String fromId,String toId,String dataId,String originalDataId,String creatorId,double rate,double value){
 }

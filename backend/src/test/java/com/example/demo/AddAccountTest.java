@@ -99,7 +99,7 @@ public class AddAccountTest {
         assert temp != null;
         this.dataId = temp.toString();
         System.out.println(dataId);
-        myBlockChainService.addTradeInfo("HYJ","HZL",newDataId,this.dataId,"HYJ",0.5,1.0);
+        myBlockChainService.addTradeInfo("HYJ","HZL",newDataId,this.dataId,"HYJ",0.5,"1.0");
     }
 
 

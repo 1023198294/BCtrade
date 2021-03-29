@@ -34,4 +34,32 @@ public class DataAsset {
                 ", scratch='" + scratch + '\'' +
                 '}';
     }
+
+    public String getDataId() {
+        return dataId;
+    }
+
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public String getOriginalId() {
+        return originalId;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public String getScratch() {
+        return scratch;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
 }

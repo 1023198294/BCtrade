@@ -10,5 +10,6 @@ public interface DataMapper {
     public void insertData(DataAsset dataAsset);
     public List<String> getDataIdById(String ownerId);
     public List<DataAsset> getDataById(String ownerId);
+    public DataAsset getDataByDataId(String dataid);
 }
 

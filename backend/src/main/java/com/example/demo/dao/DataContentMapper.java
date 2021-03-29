@@ -4,5 +4,6 @@ import com.example.demo.model.DataContent;
 
 public interface DataContentMapper {
     public void insertDataContent(DataContent dataContent);
-    public String getDataContentById(String dataid);
+    public DataContent getDataContentById(String dataid);
+    public String getDataRealNameById(String dataid);
 }
