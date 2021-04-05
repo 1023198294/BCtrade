@@ -3,10 +3,8 @@ package com.example.demo.service;
 import com.example.demo.dao.DataContentMapper;
 import com.example.demo.dao.DataInfoMapper;
 import com.example.demo.dao.DataMapper;
-import com.example.demo.model.DataAsset;
-import com.example.demo.model.DataContent;
-import com.example.demo.model.DataInfo;
-import com.example.demo.model.FileDealerCode;
+import com.example.demo.dao.UserMapper;
+import com.example.demo.model.*;
 import com.example.demo.service.blockchain.MyBlockChainService;
 import com.example.demo.utils.AESUtil;
 import com.example.demo.utils.DataJSON;
@@ -67,6 +65,12 @@ public class FileSaveService {
         SecretKey secretKey = AESUtil.generateKey(Arrays.copyOfRange(fileBytes, 0, Math.min(10,fileBytes.length)));
         sk = secretKey.getEncoded();
     }
+    public boolean checkClient(String uid) throws IOException {
+
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        User user = userMapper.findUserById(uid);
+        return user.getAvailable();
+    }
     public FileDealerCode saveToLocal(){
         String fileName = file.getOriginalFilename();
         String pathName = "./file/";
@@ -99,7 +103,7 @@ public class FileSaveService {
         Date date = new Date();
         String createdDate = date.toString();
         String scratch = Arrays.toString(Arrays.copyOfRange(fileBytes, 0, Math.min(255,fileBytes.length)));
-        DataAsset dataAsset = new DataAsset(dataId,ownerId, ownerId,dataId, v,createdDate,scratch);
+        DataAsset dataAsset = new DataAsset(dataId,ownerId, ownerId,dataId, v,createdDate,scratch,true);
         //        DataMapper dataMapper = session.getMapper(DataMapper.class);
         DataMapper dataMapper = session.getMapper(DataMapper.class);
         try {
@@ -175,7 +179,7 @@ public class FileSaveService {
             String value = dataAsset.getValue();
             Date date = new Date();
             String createdDate = date.toString();
-            DataAsset newDataAsset = new DataAsset(dataId,toId,creatorId,originalDataId,value,createdDate,scratch);
+            DataAsset newDataAsset = new DataAsset(dataId,toId,creatorId,originalDataId,value,createdDate,scratch,true);
             dataMapper.insertData(newDataAsset);
             try {
                 MyBlockChainService myBlockChainService = new MyBlockChainService();

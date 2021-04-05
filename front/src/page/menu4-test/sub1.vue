@@ -1,5 +1,5 @@
 <template>
-  <p class="page-container">welcome</p>
+  <p class="page-container">user page</p>
 </template>
 <script>
 export default {

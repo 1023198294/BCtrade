@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.ReportMapper">
+    <insert id="insertReport" parameterType="com.example.demo.model.Report">
+        insert into reporttable(reportid, type, reporterid,reportedid, dataid,description) values(null,#{type},#{reporterId},#{reportedId},#{dataId},#{description})
+    </insert>
+    <select id="getAllReport" resultType="com.example.demo.model.Report">
+        select * from reporttable
+    </select>
+    <select id="getReportById" parameterType="Integer" resultType="com.example.demo.model.Report">
+        select * from reporttable where reportId = #{reportId}
+    </select>
+    <delete id="deleteReportById" parameterType="Integer">
+        delete from reporttable where reportId=#{reportId}
+    </delete>
+</mapper>

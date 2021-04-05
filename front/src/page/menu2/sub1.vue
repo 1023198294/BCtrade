@@ -1,7 +1,6 @@
 <template lang="html">
   <div class="table-content">
     <el-table v-loading="loadingPitch" :data="pageList" size="mini" border style="width: 100%">
-
       <el-table-column prop="id" label=" " width="50"></el-table-column>
       <el-table-column prop="dataid" label="数据id" width="100"></el-table-column>
       <el-table-column prop="originalId" label="源数据id" width="100"></el-table-column>
@@ -243,10 +242,11 @@ export default {
 
     },
     submitUpload(){
+
       this.$refs.form.validate(
         valid=>{
           if(valid){
-
+            this.loadingPitch = true
             this.$refs.upload.submit();
             //console.log(this.filelist)
 
@@ -266,6 +266,7 @@ export default {
               message:'上传失败,请检查输入是否完整',
               type:'error'
             })
+            this.loadingPitch = true
           }
         }
       )
@@ -293,6 +294,7 @@ export default {
           type:'error'
         })
       }
+      this.loadingPitch = false
     },
     removeFile(){
       this.$notify({

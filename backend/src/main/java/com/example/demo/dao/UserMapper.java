@@ -12,4 +12,5 @@ public interface UserMapper {
     public void insertUser(User user);
     public void deleteUserById(String id);
     public void updateUserPassword(User user);
+    public void setInvalid(String id);
 }

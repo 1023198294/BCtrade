@@ -9,4 +9,5 @@ public interface DataInfoMapper {
     //String dataid, String dataname, String size, String description, String key
     public DataInfo getDataInfoById(String dataid);
     public List<DataInfo> getDataInfoByLikeName(String dname);
+    public void deleteDataInfoByDataId(String dataid);
 }

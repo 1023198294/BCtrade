@@ -15,5 +15,8 @@
     <select id="getDataInfoByLikeName" parameterType="String" resultType="com.example.demo.model.DataInfo">
         select * from datainfotable where dataname like "%"#{dname}"%"
     </select>
+    <delete id="deleteDataInfoByDataId" parameterType="String">
+        DELETE FROM datainfotable where dataid = #{dataid}
+    </delete>
     <!--    public List<DataInfo> getDataInfoByLikeName(String datalname);-->
 </mapper>

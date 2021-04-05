@@ -6,4 +6,5 @@ public interface DataContentMapper {
     public void insertDataContent(DataContent dataContent);
     public DataContent getDataContentById(String dataid);
     public String getDataRealNameById(String dataid);
+    public void deleteDataContentById(String dataid);
 }

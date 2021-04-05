@@ -100,14 +100,16 @@ export default {
               }
             ).then((response)=>{
               console.log(response);
-              if(response.data.toString()!=="登陆成功"){
+              if(response.data.toString()!=="user" && response.data.toString()!=="admin"){
                 this.$message(response.data.toString())
                 this.logining = false
                 //this.sucess = false;
               }else {
-                this.$message("成功登陆!")
+                this.$message(response.data+"成功登陆!")
                 //this.sucess = true;
                 sessionStorage.setItem('user', JSON.stringify(params)) // session存储用户信息
+                sessionStorage.setItem('role', response.data)
+                console.log(sessionStorage.getItem('role'))
                 this.logining = false
                 this.$router.push({ path: '/menu1/sub1' }) // 去主页
                 //this.$router.push({path:'/login'})

@@ -46,12 +46,19 @@ public class FileDealController {
         FileSaveService fileSaveService = new FileSaveService(session);
         try {
             fileSaveService.init(file);
-
         } catch (Exception e) {
             e.printStackTrace();
             return "初始化失败";
         }
         try {
+            String uid = (String) session.getAttribute("userId");
+            if(!fileSaveService.checkClient(uid))
+                return "该用户已被封禁，无法上传数据";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "查询用户合法性失败";
+        }
+        /*try {
             FileDealerCode code = fileSaveService.saveToLocal();
             if(code==FileDealerCode.DATA_ASSET_SAVE_FAILED){
                 throw new Exception();
@@ -59,7 +66,7 @@ public class FileDealController {
         } catch (Exception e) {
             e.printStackTrace();
             return "保存本地失败";
-        }
+        }*/
 
         try {
             FileDealerCode code = fileSaveService.saveDataAsset(value);
@@ -130,13 +137,15 @@ public class FileDealController {
             e.printStackTrace();
             return null;
         }
-
     }
     @RequestMapping(value = "Download")
     public String downloadById(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Subject subject = SecurityUtils.getSubject();
+
         Session webSession = subject.getSession(false);
-        if(webSession==null){
+
+        String userId = (String) webSession.getAttribute("userId");
+        if(userId==null){
             //非法请求
             return null;
         }
@@ -148,10 +157,22 @@ public class FileDealController {
         DataContentMapper dataContentMapper = session.getMapper(DataContentMapper.class);
         DataContent dataContent= dataContentMapper.getDataContentById(dataId);
         DataInfoMapper dataInfoMapper = session.getMapper(DataInfoMapper.class);
+        DataMapper dataMapper = session.getMapper(DataMapper.class);
         DataInfo dataInfo = dataInfoMapper.getDataInfoById(dataId);
         byte[] key = dataInfo.getKey();
         //byte[] content = dataContent.getContentByte();
         String fileName = dataContent.getName();
+            if(!subject.hasRole("admin")){
+            try {
+                DataAsset dataAsset = dataMapper.getDataByDataId(dataId);
+                if(!dataAsset.getOwnerId().equals(userId)){
+                    return null;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
         try {
             response.setContentType("application/x-download;charset=GBK");
             byte[] flow = AESUtil.decrypt(dataContent.getContent(),key);
@@ -178,7 +199,7 @@ public class FileDealController {
         try {
             int p = 0;
 
-            if(page!="-1"){
+            if(!page.equals("-1")){
                 p = Integer.parseInt(page);
             }
             PageHelper.startPage(p,Integer.parseInt(pageSize));
@@ -186,7 +207,7 @@ public class FileDealController {
             long total = PageHelper.count(new ISelect() {
                 @Override
                 public void doSelect() {
-                    dataInfoMapper.getDataInfoByLikeName("test");
+                    dataInfoMapper.getDataInfoByLikeName(dname);
                 }
             });
             return DataJSON.dataInfo2js(res,p,total).toString();

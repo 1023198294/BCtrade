@@ -7,7 +7,7 @@ public class DataInfo {
     String description;
     byte[] key;
     String value;
-    public DataInfo(String dataid, String dataname, String size, String description, byte[] key,String value) {
+    public DataInfo(String dataid, String dataname, String size, String description,byte[] key,String value) {
         this.dataid = dataid;
         this.dataname = dataname;
         this.size = size;
@@ -50,4 +50,5 @@ public class DataInfo {
     public String getValue() {
         return value;
     }
+
 }

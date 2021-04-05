@@ -96,6 +96,7 @@ public class LoginAuthorizingRealm extends AuthorizingRealm {
                 throw new UnknownAccountException("用户不存在");
         }
         curSession.setAttribute("userId",user.getId());
+        curSession.setAttribute("role",user.getRole());
         return new SimpleAuthenticationInfo(username,user.getPassword(),user.getRole());
     }
 }

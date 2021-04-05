@@ -21,4 +21,7 @@
     <select id="getDataRealNameById" parameterType="String" resultType="String">
         select datarealname from datacontent where dataid=#{dataid}
     </select>
+    <delete id="deleteDataContentById" parameterType="String">
+        delete from datacontent where dataid=#{dataid}
+    </delete>
 </mapper>

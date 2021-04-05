@@ -3,15 +3,16 @@
     <el-input type="text" placeholder="随时随地发现新数据" v-model="searchValue" @keyup.enter.native="searchHandler"></el-input>
 
     <el-table v-loading="loadingPitch" :data="pageList" size="mini" border style="width: 100%">
-      <el-table-column prop="id" label=" " width="50"></el-table-column>
+      <el-table-column prop="id" label=" " width="100"></el-table-column>
       <el-table-column prop="dataid" label="数据ID" width="140"></el-table-column>
       <el-table-column prop="dataname" label="数据名称" width="140"></el-table-column>
-      <el-table-column prop="size" label="数据大小"></el-table-column>
+      <el-table-column prop="size" label="数据大小" width="100"></el-table-column>
       <el-table-column prop="value" label="价值"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column fixed="right" label="操作" width="200">
         <template slot-scope="scope">
           <el-button @click="handleCheck(scope.row)" type="text" size="small">详细</el-button>
           <el-button @click="purchase(scope.row)" type="text" size="small">购买</el-button>
+          <el-button @click="report(scope.row)" type="text" size="small">举报</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -23,6 +24,24 @@
       :total="pageSize*pageCount"
       >
     </el-pagination>
+    <el-dialog title="举报信息" :visible.sync="dialogFormVisible">
+      <el-form :model="form" ref="form">
+        <el-form-item label="违规类型" prop="type">
+          <el-select v-model="form.type" placeholder="请选择">
+            <el-option
+              v-for="item in typeOptions"
+              :key="item.value"
+              :label="item.value"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="违规数据描述" prop="description">
+          <el-input type="textarea" :rows="5" placeholder="请输入违规数据描述" v-model="form.description"></el-input>
+        </el-form-item>
+        <el-button @click="handleReport(reportRow)">确认</el-button>
+      </el-form>
+    </el-dialog>
     </div>
 
 </template>
@@ -38,10 +57,63 @@ name: "sub1",
       pageSize:5,
       currentPage:1,
       pageCount:1,
-      loadingPitch:false
+      loadingPitch:false,
+      dialogFormVisible:false,
+      reportRow:0,
+      form:{
+        type:'',
+        reportedid:'',
+        dataid:'',
+        description:''
+      },
+      typeOptions:[{
+        value: '剽窃',
+        label: 'label1'
+        },{
+        //剽窃，恶意篡改，数据含敏感信息，数据涉嫌泄密，涉嫌洗钱
+        value: '恶意篡改他人数据',
+        label: 'label2'
+      },{
+        value: '数据含敏感信息',
+        label: 'label3'
+      },{
+        value: '数据涉嫌泄密',
+        label: 'label4'
+      },{
+        value: '涉嫌洗钱',
+        label: 'label5'
+      }],
     }
   },
   methods:{
+    handleReport(row){
+      this.$axios({
+        method:'post',
+        url:this.$global.baseUrl+"/admin/report",
+        params:{
+          type:this.form.type,
+          dataid:this.pageList[row.id].dataid,
+          description:this.form.description
+        }
+      }).then((res)=>{
+        console.log(res)
+        if(res.data==='done'){
+          this.$notify({
+            title:'notification',
+            message:'举报成功，管理员将审核该举报信息',
+            type:'success'
+          })
+
+        }else{
+          this.$notify({
+            title:'notification',
+            message:'服务器错误，举报失败',
+            type:'error'
+          })
+        }
+        this.dialogFormVisible = false
+      })
+    },
     handleCheck(row){
       console.log(row)
       console.log(this.pageList[0])
@@ -82,12 +154,27 @@ name: "sub1",
         })
       })
     },
+    report(row){
+      var _this = this
+      this.$confirm(
+        '是否举报此数据？','提示',{
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(()=> {
+        this.dialogFormVisible = true
+        this.reportRow = row
+      }
+    )
+    },
     handleCurrentChange(currentPage){
       this.currentPage = currentPage
       this.pageList = []
       this.searchHandler()
     },
-      searchHandler(){
+    searchHandler(){
+      this.pageList = []
       this.loadingPitch = true
         console.log("search "+ this.searchValue);
         this.$axios(
@@ -119,6 +206,8 @@ name: "sub1",
 
           for(var i=0;i<indexes;i++){
             const idx = 'data'+i
+            if(res.data[idx]==null)
+              break;
             let temp=
               {
                 id:i,

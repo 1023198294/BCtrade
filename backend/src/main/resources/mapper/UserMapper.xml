@@ -23,7 +23,7 @@
     <select id="findUserByName" parameterType="String" resultType="com.example.demo.model.User">
         select * from usertable where username = #{username}
     </select>
-    <select id="findUserById" parameterType="int" resultType="com.example.demo.model.User">
+    <select id="findUserById" parameterType="String" resultType="com.example.demo.model.User">
         select * from usertable where id = #{id}
     </select>
     <select id="findUserAll" resultType="com.example.demo.model.User">
@@ -37,5 +37,8 @@
     </delete>
     <update id="updateUserPassword" parameterType="com.example.demo.model.User">
         update usertable set password=#{password} where id=#{id}
+    </update>
+    <update id="setInvalid" parameterType="String">
+        update usertable set available=false where id=#{id}
     </update>
 </mapper>

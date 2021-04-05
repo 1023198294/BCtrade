@@ -15,7 +15,9 @@ public class User {
     private Boolean available;
     private String role;
     private String regtime;
+
     public User(String id, String username, String password, Boolean available, String role, String regtime) {
+        //java.lang.String, java.lang.String, java.lang.String, java.lang.Boolean, java.lang.String, java.lang.String
         this.id = id;
         this.username = username;
         this.password = password;

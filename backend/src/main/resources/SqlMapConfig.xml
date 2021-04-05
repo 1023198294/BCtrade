@@ -45,6 +45,7 @@
         <mapper resource="mapper/DataMapper.xml"/>
         <mapper resource="mapper/DataInfoMapper.xml"/>
         <mapper resource="mapper/DataContentMapper.xml"/>
+        <mapper resource="mapper/ReportMapper.xml"/>
     </mappers>
 
 </configuration>

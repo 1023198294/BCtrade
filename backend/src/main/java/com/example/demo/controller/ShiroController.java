@@ -1,10 +1,15 @@
 package com.example.demo.controller;
 
+import com.example.demo.dao.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.service.FileSaveService;
 import com.example.demo.service.RegisterService;
 import com.example.demo.service.UserManageService;
 import com.example.demo.service.blockchain.MyBlockChainService;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketException;
 
 
@@ -70,7 +76,8 @@ public class ShiroController {
         }catch (IncorrectCredentialsException e){
             return "账号或密码不正确";
         }
-        return "登陆成功";
+        Session session = subject.getSession(false);
+        return (String) session.getAttribute("role");
     }
 
     @RequestMapping("register")

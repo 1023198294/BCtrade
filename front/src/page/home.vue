@@ -26,7 +26,7 @@
         <aside :class="'menu-expanded'">
           <!--导航菜单-->
           <el-menu ref="bigmenu" :default-active="$route.path" class="el-menu-vertical-demo" background-color="#545c64" text-color="#fff" unique-opened router>
-            <template v-for="(item,index) in $router.options.routes" v-if="!item.hidden && checkContains(item.name)">
+            <template v-for="(item,index) in $router.options.routes" v-if="!item.hidden && checkContains(item.name) && checkTab(item)">
               <el-submenu v-if="!item.single" :key="index" :index="index+''">
                 <template slot="title"><i :class="item.iconCls"/>{{ item.name }}</template>
                 <el-menu-item v-for="child in item.children" v-if="!child.hidden && checkContains(child.name)" :index="item.path +'/'+ child.path" :key="item.path +'/'+ child.path" @click="addRouter(child, item.path +'/'+ child.path)">{{ child.name }}</el-menu-item>
@@ -108,6 +108,9 @@ export default {
     }
   },
   methods: {
+    checkTab(item){
+      return item.role===sessionStorage.getItem('role') || item.role==='any'
+    },
     // 退出登录
     logoutFun: function() {
       var _this = this
@@ -127,6 +130,8 @@ export default {
               this.$message("退出登录")
                 //this.sucess = false;
               sessionStorage.removeItem('user')
+
+              sessionStorage.removeItem('tabData')
               _this.$router.push('/login')
             }).catch((error)=>console.log(error))
           },1000)

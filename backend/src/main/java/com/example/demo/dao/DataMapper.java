@@ -11,5 +11,6 @@ public interface DataMapper {
     public List<String> getDataIdById(String ownerId);
     public List<DataAsset> getDataById(String ownerId);
     public DataAsset getDataByDataId(String dataid);
+    public void setInvalid(String dataid);
 }
 
