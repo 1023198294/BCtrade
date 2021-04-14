@@ -30,7 +30,7 @@
         select * from usertable
     </select>
     <insert id="insertUser" parameterType="com.example.demo.model.User">
-        insert into usertable(id,username,password,available,role,regtime) values (#{id},#{username},#{password},#{available},#{role},#{regtime})
+        insert into usertable(id,username,password,available,role,regtime,orgnization) values (#{id},#{username},#{password},#{available},#{role},#{regtime},#{orgnization})
     </insert>
     <delete id="deleteUserById" parameterType="String">
         delete from usertable where id=#{id}

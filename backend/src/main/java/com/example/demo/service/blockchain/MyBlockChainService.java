@@ -26,6 +26,20 @@ import org.hyperledger.fabric_ca.sdk.RegistrationRequest;
 import org.hyperledger.fabric_ca.sdk.exception.EnrollmentException;
 
 public class MyBlockChainService {
+    String org;
+    String caPort;
+    public MyBlockChainService(String orgNum){
+        org=orgNum;
+        if(org.equals("1")){
+            caPort = "7054";
+        }else{
+            caPort = "8054";
+        }
+    }
+    public MyBlockChainService(){
+        org="1";
+        caPort = "7054";
+    }
     static {
         System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
     }
@@ -36,7 +50,7 @@ public class MyBlockChainService {
         Path walletPath = Paths.get("wallet");
         Wallet wallet = Wallets.newFileSystemWallet(walletPath);
         // load a CCP
-        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
+        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org"+org+".example.com", "connection-org"+org+".yaml");
         Gateway.Builder builder = Gateway.createBuilder();
         builder.identity(wallet, userId).networkConfig(networkConfigPath).discovery(true);
 
@@ -60,7 +74,7 @@ public class MyBlockChainService {
         Path walletPath = Paths.get("wallet");
         Wallet wallet = Wallets.newFileSystemWallet(walletPath);
         // load a CCP
-        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
+        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org"+org+".example.com", "connection-org"+org+".yaml");
         Gateway.Builder builder = Gateway.createBuilder();
         builder.identity(wallet, ownerId).networkConfig(networkConfigPath).discovery(true);
         byte[] result = new byte[0];
@@ -79,7 +93,7 @@ public class MyBlockChainService {
         Path walletPath = Paths.get("wallet");
         Wallet wallet = Wallets.newFileSystemWallet(walletPath);
         // load a CCP
-        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
+        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org"+org+".example.com", "connection-org"+org+".yaml");
         Gateway.Builder builder = Gateway.createBuilder();
         builder.identity(wallet, fromId).networkConfig(networkConfigPath).discovery(true);
         byte[] result = new byte[0];
@@ -98,9 +112,9 @@ public class MyBlockChainService {
         // Create a CA client for interacting with the CA.
         Properties props = new Properties();
         props.put("pemFile",
-                "../fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
+                "../fabric-samples/test-network/organizations/peerOrganizations/org"+org+".example.com/ca/ca.org"+org+".example.com-cert.pem");
         props.put("allowAllHostNames", "true");
-        HFCAClient caClient = HFCAClient.createNewInstance("https://localhost:7054", props);
+        HFCAClient caClient = HFCAClient.createNewInstance("https://localhost:"+caPort, props);
         CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
         caClient.setCryptoSuite(cryptoSuite);
 
@@ -108,7 +122,7 @@ public class MyBlockChainService {
         Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
 
         // Check to see if we've already enrolled the admin user.
-        if (wallet.get("admin") != null) {
+        if (wallet.get("admin"+org) != null) {
             System.out.println("An identity for the admin user \"admin\" already exists in the wallet");
             return "failed";
         }
@@ -118,17 +132,17 @@ public class MyBlockChainService {
         enrollmentRequestTLS.addHost("localhost");
         enrollmentRequestTLS.setProfile("tls");
         Enrollment enrollment = caClient.enroll("admin", "adminpw", enrollmentRequestTLS);
-        Identity user = Identities.newX509Identity("Org1MSP", enrollment);
-        wallet.put("admin", user);
+        Identity user = Identities.newX509Identity("Org"+org+"MSP", enrollment);
+        wallet.put("admin"+org, user);
         System.out.println("Successfully enrolled user \"admin\" and imported it into the wallet");
         return "success";
         }
     public String registerUser(String userId)throws Exception{
         Properties props = new Properties();
         props.put("pemFile",
-                "../fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
+                "../fabric-samples/test-network/organizations/peerOrganizations/org"+org+".example.com/ca/ca.org"+org+".example.com-cert.pem");
         props.put("allowAllHostNames", "true");
-        HFCAClient caClient = HFCAClient.createNewInstance("https://localhost:7054", props);
+        HFCAClient caClient = HFCAClient.createNewInstance("https://localhost:"+caPort, props);
         CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
         caClient.setCryptoSuite(cryptoSuite);
 
@@ -138,7 +152,7 @@ public class MyBlockChainService {
             System.out.println("An identity for the user\" "+userId+" \"already exists in the wallet");
             return "An identity for the user \""+userId+"\" already exists in the wallet";
         }
-        X509Identity adminIdentity = (X509Identity)wallet.get("admin");
+        X509Identity adminIdentity = (X509Identity)wallet.get("admin"+org);
         if (adminIdentity == null) {
             System.out.println("\"admin\" needs to be enrolled and added to the wallet first");
             return "\"admin\" needs to be enrolled and added to the wallet first";
@@ -163,7 +177,7 @@ public class MyBlockChainService {
 
             @Override
             public String getAffiliation() {
-                return "org1.department1";
+                return "org"+org+".department1";
             }
 
             @Override
@@ -184,16 +198,16 @@ public class MyBlockChainService {
 
             @Override
             public String getMspId() {
-                return "Org1MSP";
+                return "Org"+org+"MSP";
             }
 
         };
         RegistrationRequest registrationRequest = new RegistrationRequest(userId);
-        registrationRequest.setAffiliation("org1.department1");
+        registrationRequest.setAffiliation("org"+org+".department1");
         registrationRequest.setEnrollmentID(userId);
         String enrollmentSecret = caClient.register(registrationRequest, admin);
         Enrollment enrollment = caClient.enroll(userId, enrollmentSecret);
-        Identity user = Identities.newX509Identity("Org1MSP", adminIdentity.getCertificate(), adminIdentity.getPrivateKey());
+        Identity user = Identities.newX509Identity("Org"+org+"MSP", adminIdentity.getCertificate(), adminIdentity.getPrivateKey());
         wallet.put(userId, user);
         System.out.println("Successfully enrolled user \" "+userId+ " \" and imported it into the wallet");
         return "success";
@@ -203,7 +217,7 @@ public class MyBlockChainService {
         Path walletPath = Paths.get("wallet");
         Wallet wallet = Wallets.newFileSystemWallet(walletPath);
         // load a CCP
-        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
+        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org"+org+".example.com", "connection-org"+org+".yaml");
         Gateway.Builder builder = Gateway.createBuilder();
         builder.identity(wallet, userId).networkConfig(networkConfigPath).discovery(true);
         byte[] result = new byte[0];
@@ -222,7 +236,7 @@ public class MyBlockChainService {
         Path walletPath = Paths.get("wallet");
         Wallet wallet = Wallets.newFileSystemWallet(walletPath);
         // load a CCP
-        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
+        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org"+org+".example.com", "connection-org"+org+".yaml");
         Gateway.Builder builder = Gateway.createBuilder();
         builder.identity(wallet, userId).networkConfig(networkConfigPath).discovery(true);
         byte[] result = new byte[0];
@@ -241,7 +255,7 @@ public class MyBlockChainService {
         Path walletPath = Paths.get("wallet");
         Wallet wallet = Wallets.newFileSystemWallet(walletPath);
         // load a CCP
-        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org1.example.com", "connection-org1.yaml");
+        Path networkConfigPath = Paths.get("..", "fabric-samples", "test-network", "organizations", "peerOrganizations", "org"+org+".example.com", "connection-org"+org+".yaml");
         Gateway.Builder builder = Gateway.createBuilder();
         builder.identity(wallet, dataAsset.getOwnerId()).networkConfig(networkConfigPath).discovery(true);
         byte[] result = new byte[0];

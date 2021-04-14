@@ -107,7 +107,7 @@ public class FileSaveService {
         //        DataMapper dataMapper = session.getMapper(DataMapper.class);
         DataMapper dataMapper = session.getMapper(DataMapper.class);
         try {
-            MyBlockChainService myBlockChainService = new MyBlockChainService();
+            MyBlockChainService myBlockChainService = new MyBlockChainService((String) webSession.getAttribute("org"));
             myBlockChainService.addData(dataAsset);
         } catch (Exception e) {
             e.printStackTrace();
@@ -173,6 +173,8 @@ public class FileSaveService {
             //String originalDataId = dataAsset.getOriginalId();
             String creatorId = dataAsset.getCreatorId();
             if(creatorId.equals(toId)){
+                System.out.println(toId);
+                System.out.println(dataAsset.toString());
                 return "您为此数据拥有者，无法购买";
             }
             double rate = 0.15;
@@ -182,7 +184,7 @@ public class FileSaveService {
             DataAsset newDataAsset = new DataAsset(dataId,toId,creatorId,originalDataId,value,createdDate,scratch,true);
             dataMapper.insertData(newDataAsset);
             try {
-                MyBlockChainService myBlockChainService = new MyBlockChainService();
+                MyBlockChainService myBlockChainService = new MyBlockChainService((String) webSession.getAttribute("org"));
                 myBlockChainService.addTradeInfo(fromId,toId,dataId,originalDataId,creatorId,rate,value);
             } catch (Exception e) {
                 e.printStackTrace();

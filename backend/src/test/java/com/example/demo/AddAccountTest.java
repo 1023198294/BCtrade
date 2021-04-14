@@ -17,15 +17,15 @@ public class AddAccountTest {
     private String dataId = "";
     @Test
     public void enrollAdminTest() throws Exception{
-        MyBlockChainService myBlockChainService = new MyBlockChainService();
+        MyBlockChainService myBlockChainService = new MyBlockChainService("1");
         myBlockChainService.enrollAdmin();
     }
 
     @Test
     public void registerTest() throws Exception {
-        MyBlockChainService myBlockChainService = new MyBlockChainService();
-        myBlockChainService.registerUser("HYJ");
-        myBlockChainService.registerUser("HZL");
+        MyBlockChainService myBlockChainService = new MyBlockChainService("2");
+        myBlockChainService.registerUser("ZXC");
+        //myBlockChainService.registerUser("HZL");
     }
 
     @Test

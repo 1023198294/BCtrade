@@ -15,7 +15,7 @@ public class DemoController {
     @GetMapping("/get")
     @ResponseBody
     public User getUserTemplate(){
-        User user = new User("114514","野兽先辈","1919810",false,"admin","1919-8-10");
+        User user = new User("114514","野兽先辈","1919810",false,"admin","1919-8-10","0");
         return user;
 
     }

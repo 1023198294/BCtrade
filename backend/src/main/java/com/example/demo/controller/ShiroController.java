@@ -33,10 +33,11 @@ import java.net.SocketException;
 public class ShiroController {
     @RequestMapping("charge")
     public String charge(String value){
-        MyBlockChainService myBlockChainService = new MyBlockChainService();
         Subject subject = SecurityUtils.getSubject();
         Session session = subject.getSession(false);
         Object obj = session.getAttribute("userId");
+        MyBlockChainService myBlockChainService = new MyBlockChainService((String) session.getAttribute("org"));
+
         assert obj==null;
         //System.out.println(obj+":"+value);
         try{
@@ -50,10 +51,11 @@ public class ShiroController {
 
     @RequestMapping("draw")
     public String draw(String value){
-        MyBlockChainService myBlockChainService = new MyBlockChainService();
+
         Subject subject = SecurityUtils.getSubject();
         Session session = subject.getSession(false);
         Object obj = session.getAttribute("userId");
+        MyBlockChainService myBlockChainService = new MyBlockChainService((String) session.getAttribute("org"));
         assert obj==null;
         //System.out.println(obj+":"+value);
         try{
@@ -82,6 +84,7 @@ public class ShiroController {
 
     @RequestMapping("register")
     public String register(@RequestBody User user) throws Exception {
+        System.out.println("org ="+user.getOrgnization());
         RegisterService registerService = new RegisterService();
         if(registerService.findExistUsernameOrNot(user.getUsername())){
             return "用户名已存在";

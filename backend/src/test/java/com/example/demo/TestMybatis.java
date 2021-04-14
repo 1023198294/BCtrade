@@ -26,7 +26,7 @@ public class TestMybatis {
         SqlSession session = factory.openSession();
         UserMapper userMapper = session.getMapper(UserMapper.class);
         //User user = userMapper.findUserById(2);
-        User user = new User("3","hyj","1234",true,"user","2001-01-10");
+        User user = new User("3","hyj","1234",true,"user","2001-01-10","2");
         userMapper.insertUser(user);
         //System.out.println(user);
         userMapper.deleteUserById("3");

@@ -97,6 +97,7 @@ public class LoginAuthorizingRealm extends AuthorizingRealm {
         }
         curSession.setAttribute("userId",user.getId());
         curSession.setAttribute("role",user.getRole());
+        curSession.setAttribute("org",user.getOrgnization());
         return new SimpleAuthenticationInfo(username,user.getPassword(),user.getRole());
     }
 }

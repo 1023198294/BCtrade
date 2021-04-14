@@ -18,7 +18,7 @@ public class TradeController {
         String userId = (String) session.getAttribute("userId");
         if(userId!=null){
             try{
-                MyBlockChainService myBlockChainService = new MyBlockChainService();
+                MyBlockChainService myBlockChainService = new MyBlockChainService((String) session.getAttribute("org"));
                 String remain = myBlockChainService.queryWalletById(userId);
                 if(remain!=null){
                     return remain;

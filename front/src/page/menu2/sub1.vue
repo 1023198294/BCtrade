@@ -129,10 +129,10 @@ export default {
       this.form.dataRealName = '';
       },
     handleDownloadRow(row){
-
+      console.log('download row:'+row)
       var dtid = this.pageList[row.id].originalId
 
-      //console.log(dtid)
+      console.log('download dataid:'+dtid)
       this.$axios({
         method:'get',
         url:this.$global.baseUrl+'/admin/getRealName',
@@ -141,28 +141,27 @@ export default {
         }
       }).then((res)=>{
         this.dtrn = res.data
+        this.$axios({
+          method:'get',
+          url:this.$global.baseUrl+'/admin/Download',
+          params:{
+            dataId:dtid
+          },
+          responseType:'blob'
+        }).then((res)=>{
+          const blob = res.data
+          const reader = new FileReader()
+          reader.readAsDataURL(blob)
+          reader.onload = (e) => {
+            const a = document.createElement('a')
+            a.download = this.dtrn
+            a.href = e.target.result
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+          }
+        }).catch((error)=>console.log(error))
       })
-
-      this.$axios({
-        method:'get',
-        url:this.$global.baseUrl+'/admin/Download',
-        params:{
-          dataId:dtid
-        },
-        responseType:'blob'
-      }).then((res)=>{
-        const blob = res.data
-        const reader = new FileReader()
-        reader.readAsDataURL(blob)
-        reader.onload = (e) => {
-          const a = document.createElement('a')
-          a.download = this.dtrn
-          a.href = e.target.result
-          document.body.appendChild(a)
-          a.click()
-          document.body.removeChild(a)
-        }
-      }).catch((error)=>console.log(error))
     },
     handleCheckRow(row){
       var dtid = this.pageList[row.id].originalId

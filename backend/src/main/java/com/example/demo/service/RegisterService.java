@@ -34,7 +34,7 @@ public class RegisterService {
         session.commit();
         session.close();
         ///*
-        MyBlockChainService myBlockChainService = new MyBlockChainService();
+        MyBlockChainService myBlockChainService = new MyBlockChainService(user.getOrgnization());
         myBlockChainService.registerUser(id);
         myBlockChainService.createWallet(id,0.0);
         //*/

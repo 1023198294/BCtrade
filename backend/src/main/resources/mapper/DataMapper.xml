@@ -18,4 +18,7 @@
     <update id="setInvalid" parameterType="String">
         update datatable set available=false where dataid=#{dataid}
     </update>
+    <select id="getDataByOriginDataIdAndOwnerId" parameterType="java.lang.String" resultType="com.example.demo.model.DataAsset">
+        select * from datatable where originaldataId = #{0} and ownerId = #{1}
+    </select>
 </mapper>

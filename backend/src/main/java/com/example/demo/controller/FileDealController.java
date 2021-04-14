@@ -141,9 +141,7 @@ public class FileDealController {
     @RequestMapping(value = "Download")
     public String downloadById(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Subject subject = SecurityUtils.getSubject();
-
         Session webSession = subject.getSession(false);
-
         String userId = (String) webSession.getAttribute("userId");
         if(userId==null){
             //非法请求
@@ -154,8 +152,11 @@ public class FileDealController {
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
         SqlSession session = factory.openSession();
         String dataId = request.getParameter("dataId");
+        System.out.println("downloadById#request DataId:"+dataId);
+        System.out.println("downloadById#from user"+userId);
         DataContentMapper dataContentMapper = session.getMapper(DataContentMapper.class);
         DataContent dataContent= dataContentMapper.getDataContentById(dataId);
+        //System.out.println("downloadById#request DataId:"+dataContent);
         DataInfoMapper dataInfoMapper = session.getMapper(DataInfoMapper.class);
         DataMapper dataMapper = session.getMapper(DataMapper.class);
         DataInfo dataInfo = dataInfoMapper.getDataInfoById(dataId);
@@ -164,8 +165,10 @@ public class FileDealController {
         String fileName = dataContent.getName();
             if(!subject.hasRole("admin")){
             try {
-                DataAsset dataAsset = dataMapper.getDataByDataId(dataId);
-                if(!dataAsset.getOwnerId().equals(userId)){
+                DataAsset dataAsset = dataMapper.getDataByOriginDataIdAndOwnerId(dataId,userId);
+                System.out.println("downloadById#data's ownerId:"+dataAsset.getOwnerId());
+                //
+                if(dataAsset==null){
                     return null;
                 }
             } catch (Exception e) {

@@ -20,7 +20,7 @@ public class TestRegister {
         String id = DataUtils.generateShortUuid();
         Date date = new Date();
         String regTime = date.toString();
-        User user = new User(id,"huangyangjun","114514",true,"user",regTime);
+        User user = new User(id,"huangyangjun","114514",true,"user",regTime,"2");
         String resource = "sqlMapConfig.xml";
         InputStream inputStream = Resources.getResourceAsStream(resource);
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);

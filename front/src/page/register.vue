@@ -22,9 +22,21 @@
         <el-form-item prop="repassword">
           <el-input v-model="ruleForm3.repassword" type="text" placeholder="请确认密码"/>
         </el-form-item>
+
+          <el-select v-model="ruleForm3.orgnization" placeholder="请选择组织">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              >
+            </el-option>
+          </el-select>
+
         <el-form-item prop="isadmin">
           <el-checkbox v-model="ruleForm3.isadmin">是否管理</el-checkbox>
         </el-form-item>
+
         <el-form-item style="width: 100%">
           <el-button :loading="registering" type="primary" style="width: 100%" @click="checkAndSubmit">
             提交
@@ -53,11 +65,19 @@
       };
       return{
         registering : false,
+        options:[{
+          label:'organization1',
+          value:'1'
+        },{
+          label: 'organization2',
+          value:'2'
+        }],
         ruleForm3: {
           inusername:'',
           inpassword:'',
           repassword:'',
           isadmin:false,
+          orgnization:''
         },
         rules3:{
           inusername:[
@@ -95,8 +115,10 @@
               password:this.ruleForm3.inpassword,
               available:true,
               role:this.ruleForm3.isadmin?"admin":"user",
-              regtime:"0"
+              regtime:"0",
+              orgnization:this.ruleForm3.orgnization
             }
+            console.log(this.ruleForm3)
             setTimeout(()=>{
               this.$axios(
                 {
