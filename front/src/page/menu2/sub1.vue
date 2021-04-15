@@ -7,8 +7,9 @@
       <el-table-column prop="creatorId" label="创建者id" width="140"></el-table-column>
       <el-table-column prop="createdDate" label="创建日期" width="240"></el-table-column>
       <el-table-column prop="value" label="价值"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column fixed="right" label="操作" width="500">
         <template slot-scope="scope">
+          <el-button @click="handleUpdateData(scope.row)" type="text" size="small">发布新数据版本</el-button>
           <el-button @click="handleCheckRow(scope.row)" type="text" size="small">详细</el-button>
           <el-button @click="handleDownloadRow(scope.row)" type="text" size="small">下载</el-button>
         </template>
@@ -40,6 +41,7 @@
           <el-input-number v-model="form.value" oninput="value=value.replace(/[^\d.]/g,'')"></el-input-number>
         </el-form-item>
       </el-form>
+
       <el-upload
         class="upload-demo"
         :action=posturl
@@ -61,12 +63,50 @@
         <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
       </el-upload>
     </el-dialog>
+
+    <el-dialog title="上传数据" :visible.sync="dialog2FormVisible2">
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="数据名称" prop="filename">
+          <el-input v-model="form.filename" placeholder="请输入数据名"></el-input>
+        </el-form-item>
+        <el-form-item label="数据描述" prop="description">
+          <el-input type="textarea" :rows="5" placeholder="请输入数据描述" v-model="form.description"></el-input>
+        </el-form-item>
+        <el-form-item label="数据价值" prop="value">
+          <el-input-number v-model="form.value" ></el-input-number>
+        </el-form-item>
+        <el-form-item label="资产报酬率" prop="rate">
+          <el-input-number v-model="form.rate" :min="5" :max="85" label="从修改版本中获利的比例"></el-input-number>%
+        </el-form-item>
+      </el-form>
+
+      <el-upload
+        class="upload-demo"
+        :action=posturl2
+        :data="{dataname:this.form.filename,size:this.form.size,value:this.form.value,description:this.form.description,dataRealName:this.form.dataRealName,creatorId:this.form.creatorId,rate:1-(this.form.rate)/100,originalId:this.form.originalId}"
+        ref="upload"
+        multiple
+        :on-change="updateSize"
+        :on-preview="handlePreview"
+        :limit="1"
+        :auto-upload="false"
+        :file-list="filelist"
+        :multiple="false"
+        :on-exceed="removeFile"
+        :on-remove="handleRemove"
+        :on-success="handleRes"
+        :with-credentials="true"
+      >
+        <el-button slot="trigger" size="small" type="primary">选择文件上传</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+      </el-upload>
+    </el-dialog>
     <!--el-button size="small" type="primary" @click="handleDownload">
       点击下载
     </el-button-->
-    <el-button size="small" type="primary" @click="handleDownload">
-      点击下载
-    </el-button>
+<!--    <el-button size="small" type="primary" @click="handleDownload">-->
+<!--      点击下载-->
+<!--    </el-button>-->
     <el-pagination
       small
       @current-change="handleCurrentChange"
@@ -98,13 +138,18 @@ export default {
         description:'',
         size:0.0,
         value:0.0,
-        dataRealName:''
+        dataRealName:'',
+        creatorId:'',
+        rate:30,
+        originalId:'',
       },
       posturl:this.$global.baseUrl+"/admin/upload",
+      posturl2:this.$global.baseUrl+"/admin/upload2",
       totalPage: 300,
       filename:"美赛H奖.pdf",
       filelist:[],
       dialogFormVisible:false,
+      dialog2FormVisible2:false,
       dialogCheckVisible:false,
       rules:{
         filename: [
@@ -128,6 +173,12 @@ export default {
       this.form.value = 0;
       this.form.dataRealName = '';
       },
+    handleUpdateData(row){
+      this.clearAll()
+      this.dialog2FormVisible2 = true
+      this.form.originalId = this.pageList[row.id].originalId
+      this.form.creatorId = this.pageList[row.id].creatorId
+    },
     handleDownloadRow(row){
       console.log('download row:'+row)
       var dtid = this.pageList[row.id].originalId
@@ -259,6 +310,7 @@ export default {
             },1000);
             this.clearAll();
             this.dialogFormVisible = false;
+            this.dialog2FormVisible2 = false;
           }else{
             this.$notify({
               title:'error',

@@ -58,18 +58,61 @@ public class FileDealController {
             e.printStackTrace();
             return "查询用户合法性失败";
         }
-        /*try {
-            FileDealerCode code = fileSaveService.saveToLocal();
+
+        try {
+            FileDealerCode code = fileSaveService.saveDataAsset(value);
             if(code==FileDealerCode.DATA_ASSET_SAVE_FAILED){
+                throw  new  Exception();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "保存数据资产失败";
+        }
+
+        try {
+            FileDealerCode code = fileSaveService.saveDataInfo(dataname,size,description,value);
+            if(code==FileDealerCode.DATA_INFO_SAVE_FAILED){
                 throw new Exception();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "保存本地失败";
-        }*/
+            return "保存数据信息失败";
+        }
+
+        try{
+            FileDealerCode code = fileSaveService.saveDataContent(dataRealName);
+            if(code==FileDealerCode.DATA_CONTENT_SAVE_FAILED){
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "保存数据内容失败";
+        }
+        return "上传成功";
+    }
+
+    @RequestMapping(value = "upload2")
+    public String upload2(MultipartFile file, String dataname,String dataRealName, String size, String value, String description,String rate,String creatorId,String originalId) throws SocketException, IOException {
+        Subject subject = SecurityUtils.getSubject();
+        Session session = subject.getSession(false);
+        FileSaveService fileSaveService = new FileSaveService(session);
+        try {
+            fileSaveService.init(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "初始化失败";
+        }
+        try {
+            String uid = (String) session.getAttribute("userId");
+            if(!fileSaveService.checkClient(uid))
+                return "该用户已被封禁，无法上传数据";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "查询用户合法性失败";
+        }
 
         try {
-            FileDealerCode code = fileSaveService.saveDataAsset(value);
+            FileDealerCode code = fileSaveService.saveDataAsset2(value,creatorId,originalId,rate);
             if(code==FileDealerCode.DATA_ASSET_SAVE_FAILED){
                 throw  new  Exception();
             }

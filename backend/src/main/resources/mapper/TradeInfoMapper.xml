@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.TradeInfoMapper">
+    <insert id="insertTradeInfo" parameterType="com.example.demo.model.TradeInfo">
+        insert into tradeInfo values(null,#{dataId},#{fromId},#{toId},#{creatorId},#{rate},#{value})
+    </insert>
+    <select id="getTradeInfoByUserId" parameterType="String" resultType="com.example.demo.model.TradeInfo">
+        select * from tradeInfo where fromId=#{userId} or toId=#{userId}
+    </select>
+    <select id="getTradeInfoByDataId" parameterType="String" resultType="com.example.demo.model.TradeInfo">
+        select * from tradeInfo where dataId=#{dataId}
+    </select>
+    <select id="getAllTradeInfo" resultType="com.example.demo.model.TradeInfo">
+        select * from tradeInfo
+    </select>
+</mapper>

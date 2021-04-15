@@ -5,7 +5,7 @@
 <mapper namespace="com.example.demo.dao.DataInfoMapper">
 
     <insert id="insertDataInfo" parameterType="com.example.demo.model.DataInfo">
-        insert into datainfotable(dataid,dataname,size,description,`key`,value) values(#{dataid},#{dataname},#{size},#{description},#{key},#{value})
+        insert into datainfotable(dataid,dataname,size,description,`key`,value,available) values(#{dataid},#{dataname},#{size},#{description},#{key},#{value},#{available})
     </insert>
 
     <select id="getDataInfoById" parameterType="String" resultType="com.example.demo.model.DataInfo">

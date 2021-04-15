@@ -2,9 +2,7 @@ package com.example.demo.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.example.demo.model.DataAsset;
-import com.example.demo.model.DataInfo;
-import com.example.demo.model.Report;
+import com.example.demo.model.*;
 
 import java.util.List;
 
@@ -67,13 +65,7 @@ public class DataJSON {
         JSONObject result = new JSONObject();
         result.put("cur",curPage);
         result.put("page",totalPage);
-        //    String dataid;
-        //    String dataname;
-        //    String size;
-        //    String description;
-        //    String key;
         for(int id = 0;id<reportList.size();id++){
-            //    public Report(String reportId, String type, String reporterId, String reportedId, String dataId, String description) {
             JSONObject reportJson = new JSONObject();
             reportJson.put("id",id);
             reportJson.put("reportId",reportList.get(id).getReportId());
@@ -82,13 +74,49 @@ public class DataJSON {
             reportJson.put("reportedId",reportList.get(id).getReportedId());
             reportJson.put("dataId",reportList.get(id).getDataId());
             reportJson.put("description",reportList.get(id).getDescription());
-            /*dataAssetJson.put("dataid",dataAssetList.get(id).getDataId());
-            dataAssetJson.put("creatorId",dataAssetList.get(id).getCreatorId());
-            dataAssetJson.put("originalId",dataAssetList.get(id).getOriginalId());
-            dataAssetJson.put("value",dataAssetList.get(id).getValue());
-            dataAssetJson.put("createdDate",dataAssetList.get(id).getCreatedDate());
-            //dataAssetJson.put("value",dataInfoList.get(id).getValue());*/
             result.put("data"+id,reportJson);
+        }
+        return result;
+    }
+    public static JSONObject alarm2js(List<ChargeAlarm> alarms,int curPage,long totalPage){
+        JSONObject result = new JSONObject();
+        result.put("cur",curPage);
+        result.put("page",totalPage);
+        for(int id = 0;id<alarms.size();id++){
+            JSONObject alarmJson = new JSONObject();
+            alarmJson.put("id",id);
+//            String userId;
+//            String action;
+//            String value;
+            alarmJson.put("userId",alarms.get(id).getUserId());
+            alarmJson.put("action",alarms.get(id).getAction());
+            alarmJson.put("value",alarms.get(id).getValue());
+
+            result.put("data"+id,alarmJson);
+        }
+        return result;
+    }
+    public static JSONObject trade2js(List<TradeInfo> tradeInfos, int curPage, long totalPage){
+        JSONObject result = new JSONObject();
+        result.put("cur",curPage);
+        result.put("page",totalPage);
+        for(int id = 0;id<tradeInfos.size();id++){
+            JSONObject tradeJson = new JSONObject();
+            tradeJson.put("id",id);
+//            Integer id;
+//            String dataId;
+//            String fromId;
+//            String toId;
+//            String creatorId;
+//            Double rate;//支付rate%作为版权费用
+//            String value;
+            tradeJson.put("dataId",tradeInfos.get(id).getDataId());
+            tradeJson.put("fromId",tradeInfos.get(id).getFromId());
+            tradeJson.put("toId",tradeInfos.get(id).getFromId());
+            tradeJson.put("creatorId",tradeInfos.get(id).getCreatorId());
+            tradeJson.put("rate",tradeInfos.get(id).getRate());
+            tradeJson.put("value",tradeInfos.get(id).getValue());
+            result.put("data"+id,tradeJson);
         }
         return result;
     }

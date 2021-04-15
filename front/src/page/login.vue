@@ -95,7 +95,7 @@ export default {
                 url:this.$global.baseUrl+'/admin/login',
                 params: {
                   username:params.userName,
-                  password:params.password
+                  password:this.$md5(params.password)
                 }
               }
             ).then((response)=>{

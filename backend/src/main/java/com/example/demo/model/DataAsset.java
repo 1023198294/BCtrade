@@ -11,9 +11,9 @@ public class DataAsset {
     String createdDate;
     String scratch;
     Boolean available;
+    String rate;
 
-
-    public DataAsset(String dataId, String ownerId, String creatorId, String originalId, String value, String createdDate, String scratch, Boolean available) {
+    public DataAsset(String dataId, String ownerId, String creatorId, String originalId, String value, String createdDate, String scratch,String rate, Boolean available) {
         this.dataId = dataId;
         this.ownerId = ownerId;
         this.creatorId = creatorId;
@@ -22,6 +22,7 @@ public class DataAsset {
         this.createdDate = createdDate;
         this.scratch = scratch;
         this.available = available;
+        this.rate= rate;
     }
 
     @Override
@@ -67,5 +68,9 @@ public class DataAsset {
 
     public String getOwnerId() {
         return ownerId;
+    }
+
+    public String getRate() {
+        return rate;
     }
 }

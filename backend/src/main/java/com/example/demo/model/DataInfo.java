@@ -7,13 +7,19 @@ public class DataInfo {
     String description;
     byte[] key;
     String value;
-    public DataInfo(String dataid, String dataname, String size, String description,byte[] key,String value) {
+    Boolean available;
+    public DataInfo(String dataid, String dataname, String size, String description,byte[] key,String value,Boolean available) {
         this.dataid = dataid;
         this.dataname = dataname;
         this.size = size;
         this.description = description;
         this.key = key;
         this.value = value;
+        this.available = available;
+    }
+
+    public Boolean getAvailable() {
+        return available;
     }
 
     @Override

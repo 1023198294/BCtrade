@@ -1,8 +1,10 @@
 package com.example.demo;
 
 import com.example.demo.dao.DataInfoMapper;
+import com.example.demo.dao.TradeInfoMapper;
 import com.example.demo.dao.UserMapper;
 import com.example.demo.model.DataInfo;
+import com.example.demo.model.TradeInfo;
 import com.example.demo.model.User;
 import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
@@ -74,5 +76,28 @@ public class TestMybatis {
         for(DataInfo d:res){
             System.out.println(d.toString());
         }
+    }
+    @Test
+    public void testTradeInfo() throws IOException {
+        String resource = "SqlMapConfig.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession session = factory.openSession();
+        TradeInfoMapper tradeInfoMapper = session.getMapper(TradeInfoMapper.class);
+        //User user = userMapper.findUserById(2);
+        TradeInfo tradeInfo1 = new TradeInfo(0,"dtid0","usrid0","usrid1","usrid0",1.0,"32");
+        TradeInfo tradeInfo2 = new TradeInfo(0,"dtid1","usrid1","usrid2","usrid0",0.3,"32");
+        TradeInfo tradeInfo3 = new TradeInfo(0,"dtid2","usrid2","usrid3","usrid0",0.1,"32");
+
+        //tradeInfoMapper.insertTradeInfo(tradeInfo1);
+        //tradeInfoMapper.insertTradeInfo(tradeInfo2);
+        //tradeInfoMapper.insertTradeInfo(tradeInfo3);
+        //System.out.println(user);
+        List<TradeInfo> tradeInfosByid1 = tradeInfoMapper.getTradeInfoByUserId("usrid1");
+        List<TradeInfo> tradeInfosAll = tradeInfoMapper.getAllTradeInfo();
+        System.out.println(tradeInfosByid1.toString());
+        System.out.println(tradeInfosAll.toString());
+        session.commit();
+        session.close();
     }
 }

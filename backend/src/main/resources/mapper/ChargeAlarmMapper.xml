@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.ChargeAlarmMapper">
+    <insert id="insertChargeAlarm" parameterType="com.example.demo.model.ChargeAlarm">
+        insert into chargealarm values(null,#{userId},#{action},#{value})
+    </insert>
+    <select id="getAlarmByUserId" parameterType="String" resultType="com.example.demo.model.ChargeAlarm">
+        select * from chargealarm where userId=#{userId}
+    </select>
+    <select id="getAlarmAll" resultType="com.example.demo.model.ChargeAlarm">
+        select * from chargealarm
+    </select>
+</mapper>

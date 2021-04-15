@@ -14,6 +14,8 @@ import sub21 from '../page/menu2/sub1.vue'
 import sub31 from '../page/menu3/sub1.vue'
 import sub41 from '../page/menu4-test/sub1'
 import sub51 from '../page/menu5-test/sub1'
+import sub52 from '../page/menu5-test/sub2'
+import sub53 from '../page/menu5-test/sub3'
 import news from '../page/info/news'
 import register from '../page/register'
 // 要告诉 vue 使用 vueRouter
@@ -131,15 +133,25 @@ let routes = [
   {
     path: '/menu5-test',
     component: home,
-    name: '测试页面二',
+    name: '管理中心',
     iconCls: 'el-icon-message',
     role:'admin',
     children: [
       {
         path: 'sub1',
         component:sub51,
-        name:'admin'
-      }
+        name:'举报中心'
+      },
+      {
+        path: 'sub2',
+        component:sub52,
+        name:'大额预警'
+      },
+      {
+        path: 'sub3',
+        component:sub53,
+        name:'交易查看'
+      },
     ]
   }
 ];

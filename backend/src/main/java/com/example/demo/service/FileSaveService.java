@@ -1,9 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dao.DataContentMapper;
-import com.example.demo.dao.DataInfoMapper;
-import com.example.demo.dao.DataMapper;
-import com.example.demo.dao.UserMapper;
+import com.example.demo.dao.*;
 import com.example.demo.model.*;
 import com.example.demo.service.blockchain.MyBlockChainService;
 import com.example.demo.utils.AESUtil;
@@ -103,7 +100,7 @@ public class FileSaveService {
         Date date = new Date();
         String createdDate = date.toString();
         String scratch = Arrays.toString(Arrays.copyOfRange(fileBytes, 0, Math.min(255,fileBytes.length)));
-        DataAsset dataAsset = new DataAsset(dataId,ownerId, ownerId,dataId, v,createdDate,scratch,true);
+        DataAsset dataAsset = new DataAsset(dataId,ownerId, ownerId,dataId, v,createdDate,scratch,"1.0",true);
         //        DataMapper dataMapper = session.getMapper(DataMapper.class);
         DataMapper dataMapper = session.getMapper(DataMapper.class);
         try {
@@ -124,11 +121,39 @@ public class FileSaveService {
         }
     }
 
+    public FileDealerCode saveDataAsset2(String v,String creatorId,String originalId,String rate){
+        dataId = DataUtils.generateShortUuid();
+        String ownerId = (String) webSession.getAttribute("userId");
+        Date date = new Date();
+        String createdDate = date.toString();
+        String scratch = Arrays.toString(Arrays.copyOfRange(fileBytes, 0, Math.min(255,fileBytes.length)));
+        DataAsset dataAsset = new DataAsset(dataId,ownerId, creatorId,originalId, v,createdDate,scratch,rate,true);
+        //        DataMapper dataMapper = session.getMapper(DataMapper.class);
+        DataMapper dataMapper = session.getMapper(DataMapper.class);
+        try {
+            MyBlockChainService myBlockChainService = new MyBlockChainService((String) webSession.getAttribute("org"));
+            myBlockChainService.addData(dataAsset);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return FileDealerCode.DATA_TO_CHAINCODE_FAILED;
+        }
+        try{
+            dataMapper.insertData(dataAsset);
+            //session.commit();
+            //session.close();
+            return FileDealerCode.DATA_ASSET_SAVE_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return FileDealerCode.DATA_ASSET_SAVE_FAILED;
+        }
+    }
+
+
     public FileDealerCode saveDataInfo(String dataname, String size,String description,String value){
 
         //RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         long size_value = Long.parseLong(size);
-        DataInfo dataInfo = new DataInfo(dataId,dataname, FileUtils.FormetFileSize(size_value),description, sk,value);
+        DataInfo dataInfo = new DataInfo(dataId,dataname, FileUtils.FormetFileSize(size_value),description, sk,value,true);
         DataInfoMapper dataInfoMapper = session.getMapper(DataInfoMapper.class);
         //datainfotable(dataid,dataname,size,description,key)
         try{
@@ -166,22 +191,25 @@ public class FileSaveService {
         this.session = factory.openSession();
         String toId = (String) webSession.getAttribute("userId");
         DataMapper dataMapper = session.getMapper(DataMapper.class);
+        TradeInfoMapper tradeInfoMapper = session.getMapper(TradeInfoMapper.class);
         try {
             DataAsset dataAsset = dataMapper.getDataByDataId(originalDataId);
             String fromId = dataAsset.getOwnerId();
             String scratch = dataAsset.getScratch();
-            //String originalDataId = dataAsset.getOriginalId();
+            String originalId = dataAsset.getOriginalId();
             String creatorId = dataAsset.getCreatorId();
             if(creatorId.equals(toId)){
                 System.out.println(toId);
                 System.out.println(dataAsset.toString());
                 return "您为此数据拥有者，无法购买";
             }
-            double rate = 0.15;
+            double rate = Double.parseDouble(dataAsset.getRate());
             String value = dataAsset.getValue();
             Date date = new Date();
             String createdDate = date.toString();
-            DataAsset newDataAsset = new DataAsset(dataId,toId,creatorId,originalDataId,value,createdDate,scratch,true);
+            DataAsset newDataAsset = new DataAsset(dataId,toId,creatorId,originalDataId,value,createdDate,scratch,dataAsset.getRate(),true);
+            TradeInfo tradeInfo = new TradeInfo(0,dataId,fromId,toId,creatorId,rate,value);
+            tradeInfoMapper.insertTradeInfo(tradeInfo);
             dataMapper.insertData(newDataAsset);
             try {
                 MyBlockChainService myBlockChainService = new MyBlockChainService((String) webSession.getAttribute("org"));

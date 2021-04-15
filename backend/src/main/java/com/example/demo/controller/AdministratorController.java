@@ -64,6 +64,98 @@ public class AdministratorController {
         }
     }
 
+    @RequestMapping("getCA")
+    public String getCA(String page,String pageSize){
+        Subject subject = SecurityUtils.getSubject();
+        ReportService reportService = new ReportService();
+        int pageInt = Integer.parseInt(page);
+        int pageSizeInt = Integer.parseInt(pageSize);
+        if(subject.hasRole("admin")){
+            try{
+                JSONObject reportList = reportService.getChargeAlarms(pageInt,pageSizeInt);
+                return reportList.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "error";
+            }
+        }else{
+            return "please login with an admin account";
+        }
+    }
+
+    @RequestMapping("get_money_involved")
+    public String moneyInvolved(String dataId){
+        Subject subject = SecurityUtils.getSubject();
+        ReportService reportService = new ReportService();
+        if(subject.hasRole("admin")){
+            try{
+                JSONObject reportList = reportService.getMoneyInvolved(dataId);
+                return reportList.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "error";
+            }
+        }else{
+            return "please login with an admin account";
+        }
+    }
+
+    @RequestMapping("get_user_trades")
+    public String getUT(String userId,String page,String pageSize){
+        Subject subject = SecurityUtils.getSubject();
+        ReportService reportService = new ReportService();
+        int pageInt = Integer.parseInt(page);
+        int pageSizeInt = Integer.parseInt(pageSize);
+        if(subject.hasRole("admin")){
+            try{
+                JSONObject reportList = reportService.getTradeInfoById(userId,pageInt,pageSizeInt);
+                return reportList.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "error";
+            }
+        }else{
+            return "please login with an admin account";
+        }
+    }
+
+    @RequestMapping("get_data_trades")
+    public String getDT(String dataId,String page,String pageSize){
+        Subject subject = SecurityUtils.getSubject();
+        ReportService reportService = new ReportService();
+        int pageInt = Integer.parseInt(page);
+        int pageSizeInt = Integer.parseInt(pageSize);
+        if(subject.hasRole("admin")){
+            try{
+                JSONObject reportList = reportService.getTradeInfoByDataId(dataId,pageInt,pageSizeInt);
+                return reportList.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "error";
+            }
+        }else{
+            return "please login with an admin account";
+        }
+    }
+
+    @RequestMapping("get_all_trades")
+    public String getAT(String page,String pageSize){
+        Subject subject = SecurityUtils.getSubject();
+        ReportService reportService = new ReportService();
+        int pageInt = Integer.parseInt(page);
+        int pageSizeInt = Integer.parseInt(pageSize);
+        if(subject.hasRole("admin")){
+            try{
+                JSONObject reportList = reportService.getTradeInfoAll(pageInt,pageSizeInt);
+                return reportList.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "error";
+            }
+        }else{
+            return "please login with an admin account";
+        }
+    }
     @RequestMapping("ban")
     public String ban(int reportId,boolean banUser,boolean banData){
         ReportService reportService = new ReportService();
@@ -73,5 +165,10 @@ public class AdministratorController {
             e.printStackTrace();
             return "ban error";
         }
+    }
+
+    @RequestMapping("call_the_police")
+    public String ctp(){
+        return "已将数据上报公安";
     }
 }

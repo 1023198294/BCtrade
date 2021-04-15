@@ -21,6 +21,8 @@
         Description of BCToken
       </el-aside>
       <el-main  >
+        <div style="margin-top: 40px;margin-bottom: 20px;font-size: 20px">当前余额</div>
+        <div style="margin-top: 60px;margin-bottom: 20px;font-size: 20px">{{remain}}</div>
         <div style="margin-top: 150px;margin-bottom: 20px">请输入提现金额</div>
         <el-form>
           <el-form-item
@@ -57,10 +59,19 @@ export default {
       rules:{
         money:[
           {required:true,message:'请输入金额大小'},
-
         ]
-      }
+      },
+      remain:"当前余额获取中……"
     }
+  },
+  created() {
+    var _this = this
+    this.$axios.get(this.$global.baseUrl+"/admin/remain").then(function (res){
+      if(res.data==="余额查询错误"){
+        _this.remain = res.data;
+      }
+      _this.remain = _this.toDecimal2(res.data);
+    })
   },
   mounted() {
     const num = 666
@@ -75,6 +86,23 @@ export default {
     },
     nodeClick(...val) {
       console.log(222, val)
+    },
+    toDecimal2(x) {
+      var f = parseFloat(x);
+      if (isNaN(f)) {
+        return false;
+      }
+      var f = Math.round(x*100)/100;
+      var s = f.toString();
+      var rs = s.indexOf('.');
+      if (rs < 0) {
+        rs = s.length;
+        s += '.';
+      }
+      while (s.length <= rs + 2) {
+        s += '0';
+      }
+      return s;
     },
     checkAndSubmit(){
       if(this.input!==''){

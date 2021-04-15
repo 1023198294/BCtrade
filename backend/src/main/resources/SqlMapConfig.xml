@@ -46,6 +46,8 @@
         <mapper resource="mapper/DataInfoMapper.xml"/>
         <mapper resource="mapper/DataContentMapper.xml"/>
         <mapper resource="mapper/ReportMapper.xml"/>
+        <mapper resource="mapper/TradeInfoMapper.xml"/>
+        <mapper resource="mapper/ChargeAlarmMapper.xml"/>
     </mappers>
 
 </configuration>

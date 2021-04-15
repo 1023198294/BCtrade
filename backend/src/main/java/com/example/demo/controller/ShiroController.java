@@ -1,11 +1,14 @@
 package com.example.demo.controller;
 
+import com.example.demo.dao.ChargeAlarmMapper;
 import com.example.demo.dao.UserMapper;
+import com.example.demo.model.ChargeAlarm;
 import com.example.demo.model.User;
 import com.example.demo.service.FileSaveService;
 import com.example.demo.service.RegisterService;
 import com.example.demo.service.UserManageService;
 import com.example.demo.service.blockchain.MyBlockChainService;
+import com.example.demo.utils.MD5Util;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -32,12 +35,20 @@ import java.net.SocketException;
 @CrossOrigin(originPatterns = "*",allowCredentials="true",allowedHeaders = "*",methods = {})
 public class ShiroController {
     @RequestMapping("charge")
-    public String charge(String value){
+    public String charge(String value) throws IOException {
         Subject subject = SecurityUtils.getSubject();
         Session session = subject.getSession(false);
         Object obj = session.getAttribute("userId");
         MyBlockChainService myBlockChainService = new MyBlockChainService((String) session.getAttribute("org"));
-
+        String resource = "SqlMapConfig.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession sqlSession = factory.openSession();
+        ChargeAlarmMapper chargeAlarmMapper = sqlSession.getMapper(ChargeAlarmMapper.class);
+        if(Double.parseDouble(value)>200000){
+            ChargeAlarm chargeAlarm = new ChargeAlarm(0,obj.toString(),"charge",value);
+            chargeAlarmMapper.insertChargeAlarm(chargeAlarm);
+        }
         assert obj==null;
         //System.out.println(obj+":"+value);
         try{
@@ -46,11 +57,13 @@ public class ShiroController {
             e.printStackTrace();
             return "充值失败";
         }
+        sqlSession.commit();
+        sqlSession.close();
         return "success";
     }
 
     @RequestMapping("draw")
-    public String draw(String value){
+    public String draw(String value) throws IOException {
 
         Subject subject = SecurityUtils.getSubject();
         Session session = subject.getSession(false);
@@ -58,6 +71,15 @@ public class ShiroController {
         MyBlockChainService myBlockChainService = new MyBlockChainService((String) session.getAttribute("org"));
         assert obj==null;
         //System.out.println(obj+":"+value);
+        String resource = "SqlMapConfig.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession sqlSession = factory.openSession();
+        ChargeAlarmMapper chargeAlarmMapper = sqlSession.getMapper(ChargeAlarmMapper.class);
+        if(Double.parseDouble(value)>200000){
+            ChargeAlarm chargeAlarm = new ChargeAlarm(0,obj.toString(),"draw",value);
+            chargeAlarmMapper.insertChargeAlarm(chargeAlarm);
+        }
         try{
             myBlockChainService.chargeOrDraw(obj.toString(),-1*Double.parseDouble(value));
         }catch(Exception e){
@@ -68,6 +90,7 @@ public class ShiroController {
     }
     @RequestMapping("login")
     public String login(String username, String password){
+        //password = MD5Util.encrypt(password);
         Subject subject = SecurityUtils.getSubject();
         try{
             subject.login(new UsernamePasswordToken(username,password));
@@ -85,6 +108,7 @@ public class ShiroController {
     @RequestMapping("register")
     public String register(@RequestBody User user) throws Exception {
         System.out.println("org ="+user.getOrgnization());
+        user.setPassword(MD5Util.encrypt(user.getPassword()));
         RegisterService registerService = new RegisterService();
         if(registerService.findExistUsernameOrNot(user.getUsername())){
             return "用户名已存在";

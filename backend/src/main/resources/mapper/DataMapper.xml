@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.dao.DataMapper">
     <insert id="insertData" parameterType="com.example.demo.model.DataAsset">
-        insert into datatable(dataid,ownerid,creatorid,originaldataid, value, createdDate,scratch,available) values(#{dataId},#{ownerId},#{creatorId},#{originalId}, #{value}, #{createdDate},#{scratch},#{available})
+        insert into datatable(dataid,ownerid,creatorid,originaldataid, value, createdDate,scratch,available,rate) values(#{dataId},#{ownerId},#{creatorId},#{originalId}, #{value}, #{createdDate},#{scratch},#{available},#{rate})
     </insert>
     <select id="getDataIdById" parameterType="String" resultType="String">
         select dataid from datatable where ownerid=#{ownerid}
@@ -19,6 +19,6 @@
         update datatable set available=false where dataid=#{dataid}
     </update>
     <select id="getDataByOriginDataIdAndOwnerId" parameterType="java.lang.String" resultType="com.example.demo.model.DataAsset">
-        select * from datatable where originaldataId = #{0} and ownerId = #{1}
+        select * from datatable where originaldataId = #{0} and ownerId = #{1} limit 1
     </select>
 </mapper>

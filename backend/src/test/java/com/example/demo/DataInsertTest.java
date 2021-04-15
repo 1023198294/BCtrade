@@ -32,7 +32,7 @@ public class DataInsertTest {
         Date date = new Date();
 
         dataMapper.insertData(new DataAsset(
-                dataId,"BDy0816H","BDy0816H",dataId,"114514.00",date.toString(),"1919810",true
+                dataId,"BDy0816H","BDy0816H",dataId,"114514.00",date.toString(),"1919810","1.0",true
         ));
         //Date.parse(date.toString());
         session.commit();

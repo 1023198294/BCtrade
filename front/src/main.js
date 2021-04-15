@@ -13,10 +13,12 @@ import VCharts from 'v-charts'
 import Directives from './utils/directive'
 import axios from 'axios'
 import global_variable from "./global_variable";
-import qs from 'qs'
+import qs from 'qs';
+import md5 from  'js-md5';
 axios.defaults.withCredentials = true;
 Vue.prototype.$global = global_variable;
 Vue.prototype.$axios = axios;
+Vue.prototype.$md5 = md5;
 Vue.prototype.qs = qs;
 Vue.use(ElementUI);
 Vue.use(Router);
