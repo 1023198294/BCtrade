@@ -46,13 +46,13 @@ register:
 	http://localhost:8999/admin/register
 	body:
 	{
-    "id":"114514",
-    "username":"luojun",
-    "password":"1919810",
-    "available":"true",
-    "role":"user",
-    "regtime":" "
-}
+	    "id":"114514",
+	    "username":"luojun",
+	    "password":"1919810",
+	    "available":"true",
+	    "role":"user",
+	    "regtime":" "
+	}
 
 #登录服务
 login:
