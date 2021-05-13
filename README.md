@@ -23,6 +23,8 @@ locate to the directory, download the dependencies and use npm run command
 ```shell
 $ cd front
 $ sudo npm install #be patient, It's going to take a while
+$ # if permissions denied in mkdir, try the following command
+$ # npm install --unsafe-perm
 $ sudo npm run dev
 ```
 
@@ -33,7 +35,12 @@ $ sudo npm run dev
 ```shell
 $ cd backend
 $ mvn package -DskipTests
-$ java -jar /target/demo-0.0.1-SNAPSHOT.jar
+$ if maven version is not greater than 3.2.0, please follow the guides in https://blog.csdn.net/qq_38974638/article/details/112784951
+$ mvn test -Dtest=AddAccountTest#enrollAdminTest
+$ java -jar target/demo-0.0.1-SNAPSHOT.jar
+$ #if the system shows no main manifest run the following command
+$ # java -cp target/demo-0.0.1-SNAPSHOT.jar com.example.demo.DemoApplication
+$ # 
 ```
 
 
